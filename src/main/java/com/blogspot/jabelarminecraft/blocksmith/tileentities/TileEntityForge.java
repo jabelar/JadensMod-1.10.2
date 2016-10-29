@@ -3,6 +3,11 @@
  */
 package com.blogspot.jabelarminecraft.blocksmith.tileentities;
 
+import com.blogspot.jabelarminecraft.blocksmith.blocks.BlockForge;
+import com.blogspot.jabelarminecraft.blocksmith.containers.ContainerForge;
+import com.blogspot.jabelarminecraft.blocksmith.recipes.ForgeRecipes;
+import com.blogspot.jabelarminecraft.blocksmith.slots.SlotForgeFuel;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -21,25 +26,20 @@ import net.minecraft.item.ItemSword;
 import net.minecraft.item.ItemTool;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.server.gui.IUpdatePlayerListBox;
 import net.minecraft.tileentity.TileEntityLockable;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.ITickable;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.blogspot.jabelarminecraft.blocksmith.blocks.BlockForge;
-import com.blogspot.jabelarminecraft.blocksmith.containers.ContainerForge;
-import com.blogspot.jabelarminecraft.blocksmith.recipes.ForgeRecipes;
-import com.blogspot.jabelarminecraft.blocksmith.slots.SlotForgeFuel;
 
 /**
  * @author agilroy
  *
  */
-public class TileEntityForge extends TileEntityLockable implements IUpdatePlayerListBox, ISidedInventory
+public class TileEntityForge extends TileEntityLockable implements ITickable, ISidedInventory
 {
     private static final int[] slotsTop = new int[] {0};
     private static final int[] slotsBottom = new int[] {2, 1};
@@ -112,7 +112,7 @@ public class TileEntityForge extends TileEntityLockable implements IUpdatePlayer
      * like when you close a workbench GUI.
      */
     @Override
-	public ItemStack getStackInSlotOnClosing(int index)
+	public ItemStack removeStackFromSlot(int index)
     {
         if (forgeItemStacks[index] != null)
         {
@@ -152,7 +152,7 @@ public class TileEntityForge extends TileEntityLockable implements IUpdatePlayer
      * Gets the name of this command sender (usually username, but possibly "Rcon")
      */
     @Override
-	public String getCommandSenderName()
+	public String getName()
     {
         return hasCustomName() ? forgeCustomName : "container.forge";
     }
@@ -201,7 +201,7 @@ public class TileEntityForge extends TileEntityLockable implements IUpdatePlayer
     }
 
     @Override
-	public void writeToNBT(NBTTagCompound compound)
+	public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
         super.writeToNBT(compound);
         compound.setShort("BurnTime", (short)forgeBurnTime);
@@ -226,6 +226,8 @@ public class TileEntityForge extends TileEntityLockable implements IUpdatePlayer
         {
             compound.setString("CustomName", forgeCustomName);
         }
+        
+        return compound;
     }
 
     /**
@@ -318,7 +320,7 @@ public class TileEntityForge extends TileEntityLockable implements IUpdatePlayer
             if (flag != isBurning())
             {
                 flag1 = true;
-                BlockForge.changeBlockState(isBurning(), worldObj, pos);
+                BlockForge.changeBlockStateContainer(isBurning(), worldObj, pos);
             }
         }
 
@@ -371,9 +373,9 @@ public class TileEntityForge extends TileEntityLockable implements IUpdatePlayer
                 forgeItemStacks[2].stackSize += itemstack.stackSize; // Forge BugFix: Results may have multiple items
             }
 
-            if (forgeItemStacks[0].getItem() == Item.getItemFromBlock(Blocks.sponge) && forgeItemStacks[0].getMetadata() == 1 && forgeItemStacks[1] != null && forgeItemStacks[1].getItem() == Items.bucket)
+            if (forgeItemStacks[0].getItem() == Item.getItemFromBlock(Blocks.SPONGE) && forgeItemStacks[0].getMetadata() == 1 && forgeItemStacks[1] != null && forgeItemStacks[1].getItem() == Items.BUCKET)
             {
-                forgeItemStacks[1] = new ItemStack(Items.water_bucket);
+                forgeItemStacks[1] = new ItemStack(Items.WATER_BUCKET);
             }
 
             --forgeItemStacks[0].stackSize;
@@ -389,6 +391,7 @@ public class TileEntityForge extends TileEntityLockable implements IUpdatePlayer
      * Returns the number of ticks that the supplied fuel item will keep the forge burning, or 0 if the item isn't
      * fuel
      */
+    @SuppressWarnings("deprecation")
     public static int getItemBurnTime(ItemStack p_145952_0_)
     {
         if (p_145952_0_ == null)
@@ -399,21 +402,21 @@ public class TileEntityForge extends TileEntityLockable implements IUpdatePlayer
         {
             Item item = p_145952_0_.getItem();
 
-            if (item instanceof ItemBlock && Block.getBlockFromItem(item) != Blocks.air)
+            if (item instanceof ItemBlock && Block.getBlockFromItem(item) != Blocks.AIR)
             {
                 Block block = Block.getBlockFromItem(item);
 
-                if (block == Blocks.wooden_slab)
+                if (block == Blocks.WOODEN_SLAB)
                 {
                     return 150;
                 }
 
-                if (block.getMaterial() == Material.wood)
+                if (block.getMaterial(block.getDefaultState()) == Material.WOOD)
                 {
                     return 300;
                 }
 
-                if (block == Blocks.coal_block)
+                if (block == Blocks.COAL_BLOCK)
                 {
                     return 16000;
                 }
@@ -422,11 +425,11 @@ public class TileEntityForge extends TileEntityLockable implements IUpdatePlayer
             if (item instanceof ItemTool && ((ItemTool)item).getToolMaterialName().equals("WOOD")) return 200;
             if (item instanceof ItemSword && ((ItemSword)item).getToolMaterialName().equals("WOOD")) return 200;
             if (item instanceof ItemHoe && ((ItemHoe)item).getMaterialName().equals("WOOD")) return 200;
-            if (item == Items.stick) return 100;
-            if (item == Items.coal) return 1600;
-            if (item == Items.lava_bucket) return 20000;
-            if (item == Item.getItemFromBlock(Blocks.sapling)) return 100;
-            if (item == Items.blaze_rod) return 2400;
+            if (item == Items.STICK) return 100;
+            if (item == Items.COAL) return 1600;
+            if (item == Items.LAVA_BUCKET) return 20000;
+            if (item == Item.getItemFromBlock(Blocks.SAPLING)) return 100;
+            if (item == Items.BLAZE_ROD) return 2400;
             return net.minecraftforge.fml.common.registry.GameRegistry.getFuelValue(p_145952_0_);
         }
     }
@@ -491,7 +494,7 @@ public class TileEntityForge extends TileEntityLockable implements IUpdatePlayer
         {
             Item item = stack.getItem();
 
-            if (item != Items.water_bucket && item != Items.bucket)
+            if (item != Items.WATER_BUCKET && item != Items.BUCKET)
             {
                 return false;
             }
@@ -546,6 +549,10 @@ public class TileEntityForge extends TileEntityLockable implements IUpdatePlayer
                 break;
             case 3:
                 field_174905_l = value;
+                break;
+            default:
+                System.out.println("TileEntityForge illegal index "+id+" in setField() method");
+                break;
         }
     }
 
@@ -573,4 +580,5 @@ public class TileEntityForge extends TileEntityLockable implements IUpdatePlayer
 	{
 	    return (oldState.getBlock() != newSate.getBlock());
 	}
+
 }

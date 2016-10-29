@@ -17,6 +17,7 @@
 package com.blogspot.jabelarminecraft.blocksmith.blocks;
 
 import com.blogspot.jabelarminecraft.blocksmith.BlockSmith;
+import com.blogspot.jabelarminecraft.blocksmith.utilities.Utilities;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -45,7 +46,7 @@ public class BlockDeconstructor extends Block
     public BlockDeconstructor()
     {
         super(Material.ROCK);
-        setUnlocalizedName("deconstructor");
+        Utilities.setBlockName(this, "deconstructor");
         setCreativeTab(CreativeTabs.DECORATIONS);
     }
 

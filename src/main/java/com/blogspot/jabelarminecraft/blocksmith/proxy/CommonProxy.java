@@ -19,12 +19,30 @@
 
 package com.blogspot.jabelarminecraft.blocksmith.proxy;
 
-import io.netty.buffer.ByteBuf;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.blogspot.jabelarminecraft.blocksmith.BlockSmith;
+import com.blogspot.jabelarminecraft.blocksmith.EventHandler;
+import com.blogspot.jabelarminecraft.blocksmith.OreGenEventHandler;
+import com.blogspot.jabelarminecraft.blocksmith.TerrainGenEventHandler;
+import com.blogspot.jabelarminecraft.blocksmith.commands.CommandStructureCapture;
+import com.blogspot.jabelarminecraft.blocksmith.entities.EntityPigTest;
+import com.blogspot.jabelarminecraft.blocksmith.gui.GuiHandler;
+import com.blogspot.jabelarminecraft.blocksmith.networking.MessageExtendedReachAttack;
+import com.blogspot.jabelarminecraft.blocksmith.networking.MessageRequestItemStackRegistryFromClient;
+import com.blogspot.jabelarminecraft.blocksmith.networking.MessageSendItemStackRegistryToServer;
+import com.blogspot.jabelarminecraft.blocksmith.networking.MessageSyncEntityToClient;
+import com.blogspot.jabelarminecraft.blocksmith.networking.MessageToClient;
+import com.blogspot.jabelarminecraft.blocksmith.networking.MessageToServer;
+import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityCompactor;
+import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityForge;
+import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityGrinder;
+import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityMovingLightSource;
+import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityTanningRack;
+
+import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.player.EntityPlayer;
@@ -34,12 +52,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.Achievement;
 import net.minecraft.stats.StatBasic;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.AchievementPage;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -54,29 +72,6 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
-
-import com.blogspot.jabelarminecraft.blocksmith.BlockSmith;
-import com.blogspot.jabelarminecraft.blocksmith.EventHandler;
-import com.blogspot.jabelarminecraft.blocksmith.FMLEventHandler;
-import com.blogspot.jabelarminecraft.blocksmith.OreGenEventHandler;
-import com.blogspot.jabelarminecraft.blocksmith.TerrainGenEventHandler;
-import com.blogspot.jabelarminecraft.blocksmith.commands.CommandStructureCapture;
-import com.blogspot.jabelarminecraft.blocksmith.entities.EntityPigTest;
-import com.blogspot.jabelarminecraft.blocksmith.gui.GuiHandler;
-import com.blogspot.jabelarminecraft.blocksmith.items.SpawnEgg;
-import com.blogspot.jabelarminecraft.blocksmith.networking.MessageExtendedReachAttack;
-import com.blogspot.jabelarminecraft.blocksmith.networking.MessageRequestItemStackRegistryFromClient;
-import com.blogspot.jabelarminecraft.blocksmith.networking.MessageSendItemStackRegistryToServer;
-import com.blogspot.jabelarminecraft.blocksmith.networking.MessageSyncEntityToClient;
-import com.blogspot.jabelarminecraft.blocksmith.networking.MessageToClient;
-import com.blogspot.jabelarminecraft.blocksmith.networking.MessageToServer;
-import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityCompactor;
-import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityForge;
-import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityGrinder;
-import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityMovingLightSource;
-import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityTanningRack;
-import com.google.common.base.Predicates;
-import com.google.common.collect.Iterators;
 
 public class CommonProxy 
 {
@@ -226,7 +221,7 @@ public class CommonProxy
         BlockSmith.allowDeconstructUnrealistic = BlockSmith.config.get(Configuration.CATEGORY_GENERAL, "All Craftables Can Deconstruct", false, "Allow unrealistic deconstruction like pumpkins back from pumpkin seeds").getBoolean(false);
         // DEBUG
         System.out.println("Allow unrealistic deconstruction = "+BlockSmith.allowDeconstructUnrealistic);
-        BlockSmith.allowHorseArmorCrafting = BlockSmith.config.get(Configuration.CATEGORY_GENERAL, "Can Craft Horse Armor", true, "Allow crafting of horse armor and saddles").getBoolean(true);
+        BlockSmith.allowHorseArmorCrafting = BlockSmith.config.get(Configuration.CATEGORY_GENERAL, "Can Craft Horse Armor", true, "Allow crafting of horse armor and SADDLEs").getBoolean(true);
         // DEBUG
         System.out.println("Allow horse armor crafting = "+BlockSmith.allowHorseArmorCrafting);
         BlockSmith.allowDeconstructEnchantedBooks  = BlockSmith.config.get(Configuration.CATEGORY_GENERAL, "Can Deconstruct Enchanted Books", true, "Allow enchanted books to deconstruct like a regular book").getBoolean(true);
@@ -247,13 +242,13 @@ public class CommonProxy
     public void registerBlocks()
     {
         //example: GameRegistry.registerBlock(blockTomato, "tomatoes");
-        GameRegistry.registerBlock(BlockSmith.blockTanningRack, BlockSmith.blockTanningRack.getUnlocalizedName().substring(5));
-        GameRegistry.registerBlock(BlockSmith.blockGrinder, BlockSmith.blockGrinder.getUnlocalizedName().substring(5));
-        GameRegistry.registerBlock(BlockSmith.blockCompactor, BlockSmith.blockCompactor.getUnlocalizedName().substring(5));
-        GameRegistry.registerBlock(BlockSmith.blockDeconstructor, BlockSmith.blockDeconstructor.getUnlocalizedName().substring(5));
-        GameRegistry.registerBlock(BlockSmith.blockForge, BlockSmith.blockForge.getUnlocalizedName().substring(5));
+        GameRegistry.register(BlockSmith.blockTanningRack);
+        GameRegistry.register(BlockSmith.blockGrinder);
+        GameRegistry.register(BlockSmith.blockCompactor);
+        GameRegistry.register(BlockSmith.blockDeconstructor);
+        GameRegistry.register(BlockSmith.blockForge);
 //        GameRegistry.registerBlock(BlockSmith.blockForgeLit, BlockSmith.blockForgeLit.getUnlocalizedName().substring(5));
-        GameRegistry.registerBlock(BlockSmith.blockMovingLightSource, BlockSmith.blockMovingLightSource.getUnlocalizedName().substring(5));
+        GameRegistry.register(BlockSmith.blockMovingLightSource);
         
         // each instance of your block should have a name that is unique within your mod.  use lower case.
         // you don't need to register an item corresponding to the block, GameRegistry.registerBlock does this automatically.
@@ -279,11 +274,11 @@ public class CommonProxy
         // DEBUG
         System.out.println("Registering items");
 
-        GameRegistry.registerItem(BlockSmith.cowHide, BlockSmith.cowHide.getUnlocalizedName().substring(5));
-        GameRegistry.registerItem(BlockSmith.sheepSkin, BlockSmith.sheepSkin.getUnlocalizedName().substring(5));
-        GameRegistry.registerItem(BlockSmith.pigSkin, BlockSmith.pigSkin.getUnlocalizedName().substring(5));
-        GameRegistry.registerItem(BlockSmith.horseHide, BlockSmith.horseHide.getUnlocalizedName().substring(5));
-        GameRegistry.registerItem(BlockSmith.swordExtended, BlockSmith.swordExtended.getUnlocalizedName().substring(5));
+        GameRegistry.register(BlockSmith.cowHide);
+        GameRegistry.register(BlockSmith.sheepSkin);
+        GameRegistry.register(BlockSmith.pigSkin);
+        GameRegistry.register(BlockSmith.horseHide);
+        GameRegistry.register(BlockSmith.swordExtended);
     }
     
     /**
@@ -320,7 +315,7 @@ public class CommonProxy
                     "ABA",
                     "A A",
                     "CCC",
-                    'A', Items.stick, 'B', Blocks.stone, 'C', Blocks.cobblestone
+                    'A', Items.STICK, 'B', Blocks.STONE, 'C', Blocks.COBBLESTONE
                 });
         GameRegistry.addShapedRecipe(new ItemStack(BlockSmith.blockDeconstructor), 
                 new Object[]
@@ -328,39 +323,39 @@ public class CommonProxy
                     "SSS", 
                     "SXS", 
                     "SSS", 
-                    'X', Blocks.crafting_table, 'S', Blocks.cobblestone
+                    'X', Blocks.CRAFTING_TABLE, 'S', Blocks.COBBLESTONE
                 });
-        GameRegistry.addShapedRecipe(new ItemStack(Items.iron_horse_armor), 
+        GameRegistry.addShapedRecipe(new ItemStack(Items.IRON_HORSE_ARMOR), 
                 new Object[]
                 {
                     "  S", 
                     "SXS", 
                     "SSS", 
-                    'X', Blocks.wool, 'S', Items.iron_ingot
+                    'X', Blocks.WOOL, 'S', Items.IRON_INGOT
                 });
-        GameRegistry.addShapedRecipe(new ItemStack(Items.golden_horse_armor), 
+        GameRegistry.addShapedRecipe(new ItemStack(Items.GOLDEN_HORSE_ARMOR), 
                 new Object[]
                 {
                     "  S", 
                     "SXS", 
                     "SSS", 
-                    'X', Blocks.wool, 'S', Items.gold_ingot
+                    'X', Blocks.WOOL, 'S', Items.GOLD_INGOT
                 });
-        GameRegistry.addShapedRecipe(new ItemStack(Items.diamond_horse_armor), 
+        GameRegistry.addShapedRecipe(new ItemStack(Items.DIAMOND_HORSE_ARMOR), 
                 new Object[]
                 {
                     "  S", 
                     "SXS", 
                     "SSS", 
-                    'X', Blocks.wool, 'S', Items.diamond
+                    'X', Blocks.WOOL, 'S', Items.DIAMOND
                 });
-        GameRegistry.addShapedRecipe(new ItemStack(Items.saddle), 
+        GameRegistry.addShapedRecipe(new ItemStack(Items.SADDLE), 
                 new Object[]
                 {
                     "SSS", 
                     "SXS", 
                     "X X", 
-                    'X', Items.iron_ingot, 'S', Items.leather
+                    'X', Items.IRON_INGOT, 'S', Items.LEATHER
                 });
 
     }
@@ -403,17 +398,8 @@ public class CommonProxy
      public void registerModEntityWithEgg(Class parEntityClass, String parEntityName, 
               int parEggColor, int parEggSpotsColor)
     {
-        registerModEntity(parEntityClass, parEntityName);
-        registerSpawnEgg(parEntityName, parEggColor, parEggSpotsColor);
+         EntityRegistry.registerModEntity(parEntityClass, parEntityName, ++modEntityID, BlockSmith.instance, 80, 3, false, parEggColor, parEggSpotsColor);
     }
-
-     // can't use vanilla spawn eggs with entities registered with modEntityID, so use custom eggs.
-     // name passed must match entity name string
-     public void registerSpawnEgg(String parSpawnName, int parEggColor, int parEggSpotsColor)
-     {
-         Item itemSpawnEgg = new SpawnEgg(parSpawnName, parEggColor, parEggSpotsColor);
-         GameRegistry.registerItem(itemSpawnEgg, itemSpawnEgg.getUnlocalizedName().substring(5));
-     }
 
      /**
       * Registers entity natural spawns
@@ -423,36 +409,31 @@ public class CommonProxy
         /*
          *  register natural spawns for entities
          * EntityRegistry.addSpawn(MyEntity.class, spawnProbability, minSpawn, maxSpawn, enumCreatureType, [spawnBiome]);
-         * See the constructor in BiomeGenBase.java to see the rarity of vanilla mobs; Sheep are probability 10 while Endermen are probability 1
+         * See the constructor in Biome.java to see the rarity of vanilla mobs; Sheep are probability 10 while Endermen are probability 1
          * minSpawn and maxSpawn are about how groups of the entity spawn
          * enumCreatureType represents the "rules" Minecraft uses to determine spawning, based on creature type. By default, you have three choices:
          *    EnumCreatureType.creature uses rules for animals: spawn everywhere it is light out.
          *    EnumCreatureType.monster uses rules for monsters: spawn everywhere it is dark out.
          *    EnumCreatureType.waterCreature uses rules for water creatures: spawn only in water.
-         * [spawnBiome] is an optional parameter of type BiomeGenBase that limits the creature spawn to a single biome type. Without this parameter, it will spawn everywhere. 
+         * [spawnBiome] is an optional parameter of type Biome that limits the creature spawn to a single biome type. Without this parameter, it will spawn everywhere. 
          */
 
          // DEBUG
         System.out.println("Registering natural spawns");
 
         // // savanna
-        // EntityRegistry.addSpawn(EntityLion.class, 6, 1, 5, EnumCreatureType.creature, BiomeGenBase.savanna); //change the values to vary the spawn rarity, biome, etc.              
-        // EntityRegistry.addSpawn(EntityElephant.class, 10, 1, 5, EnumCreatureType.creature, BiomeGenBase.savanna); //change the values to vary the spawn rarity, biome, etc.              
+        // EntityRegistry.addSpawn(EntityLion.class, 6, 1, 5, EnumCreatureType.creature, Biome.savanna); //change the values to vary the spawn rarity, biome, etc.              
+        // EntityRegistry.addSpawn(EntityElephant.class, 10, 1, 5, EnumCreatureType.creature, Biome.savanna); //change the values to vary the spawn rarity, biome, etc.              
      }
  
      protected void addSpawnAllBiomes(EntityLiving parEntity, int parChance, int parMinGroup, int parMaxGroup)
      {
-         
-         /*
-          *  For the biome type you can use an list, but unfortunately the built-in biomeList contains
-          * null entries and will crash, so you need to clean up that list.
-          * diesieben07 suggested the following code to remove the nulls and create list of all biomes
-          */
-         BiomeGenBase[] allBiomes = Iterators.toArray(Iterators.filter(Iterators.forArray(BiomeGenBase.getBiomeGenArray()), Predicates.notNull()), BiomeGenBase.class);
-         for (int i=0; i<allBiomes.length; i++)
+         Iterator<ResourceLocation> allBiomesIterator = Biome.REGISTRY.getKeys().iterator();
+         while (allBiomesIterator.hasNext())
          {
+             Biome nextBiome = Biome.REGISTRY.getObject(allBiomesIterator.next());
              EntityRegistry.addSpawn(parEntity.getClass(), parChance, parMinGroup, parMaxGroup, EnumCreatureType.CREATURE, 
-                  allBiomes[i]); //change the values to vary the spawn rarity, biome, etc.              
+                  nextBiome); //change the values to vary the spawn rarity, biome, etc.              
          }
      }
      
@@ -479,9 +460,6 @@ public class CommonProxy
         MinecraftForge.EVENT_BUS.register(new EventHandler());
         MinecraftForge.TERRAIN_GEN_BUS.register(new TerrainGenEventHandler());
         MinecraftForge.ORE_GEN_BUS.register(new OreGenEventHandler());        
-
-        // some events, especially tick, is handled on FML bus
-        FMLCommonHandler.instance().bus().register(new FMLEventHandler());
     }
     
     /**
@@ -489,23 +467,23 @@ public class CommonProxy
      */
     protected void registerAchievements()
     {
-        BlockSmith.achievementTanningAHide = new Achievement("achievement.tanningahide", "tanningahide", 0, 0, Items.leather, (Achievement)null);
+        BlockSmith.achievementTanningAHide = new Achievement("achievement.tanningahide", "tanningahide", 0, 0, Items.LEATHER, (Achievement)null);
         BlockSmith.achievementTanningAHide.registerStat().initIndependentStat(); // Eclipse is having trouble chaining these in previous line
 //      BlockSmith.achievementGiantSlayer = new Achievement("achievement.giantslayer", "giantslayer", 2, 1, (Item)null, BlockSmith.achievementTanningAHide).setSpecial();
 //      BlockSmith.achievementGiantSlayer.registerStat(); // Eclipse is having trouble chaining this in previous line
-        BlockSmith.craftTable = (Achievement) new Achievement("createDecraftTable", "createDecraftTable", 1 - 2 - 2, -1 - 3, BlockSmith.blockDeconstructor, null).registerStat();
-        BlockSmith.deconstructAny = (Achievement) new Achievement("deconstructAnything", "deconstructAnything", 2 - 2, -2 - 2, Items.diamond_hoe, BlockSmith.craftTable).registerStat();
-        BlockSmith.deconstructDiamondHoe = (Achievement) new Achievement("deconstructDiamondHoe", "deconstructDiamondHoe", 2 - 2, 0 - 2, Items.diamond_hoe, BlockSmith.deconstructAny).registerStat();
-        BlockSmith.deconstructJunk = (Achievement) new Achievement("deconstructJunk", "deconstructJunk", 1 - 2, -1 - 2, Items.leather_boots, BlockSmith.deconstructAny).registerStat();
-        BlockSmith.deconstructDiamondShovel = (Achievement) new Achievement("deconstructDiamondShovel", "deconstructDiamondShovel", 3 - 2, -1 - 2, Items.diamond_shovel, BlockSmith.deconstructAny).registerStat();
-        BlockSmith.theHatStandAchievement = (Achievement) new Achievement("porteManteauAchievement", "porteManteauAchievement", 3 - 2, -4 - 2, Blocks.oak_fence, BlockSmith.craftTable).registerStat();
+        BlockSmith.craftTable = new Achievement("createDecraftTable", "createDecraftTable", 1 - 2 - 2, -1 - 3, BlockSmith.blockDeconstructor, null).registerStat();
+        BlockSmith.deconstructAny = new Achievement("deconstructAnything", "deconstructAnything", 2 - 2, -2 - 2, Items.DIAMOND_HOE, BlockSmith.craftTable).registerStat();
+        BlockSmith.deconstructDiamondHoe = new Achievement("deconstructDiamondHoe", "deconstructDiamondHoe", 2 - 2, 0 - 2, Items.DIAMOND_HOE, BlockSmith.deconstructAny).registerStat();
+        BlockSmith.deconstructJunk = new Achievement("deconstructJunk", "deconstructJunk", 1 - 2, -1 - 2, Items.LEATHER_BOOTS, BlockSmith.deconstructAny).registerStat();
+        BlockSmith.deconstructDiamondShovel = new Achievement("deconstructDiamondShovel", "deconstructDiamondShovel", 3 - 2, -1 - 2, Items.DIAMOND_SHOVEL, BlockSmith.deconstructAny).registerStat();
+        BlockSmith.theHatStandAchievement = new Achievement("porteManteauAchievement", "porteManteauAchievement", 3 - 2, -4 - 2, Blocks.OAK_FENCE, BlockSmith.craftTable).registerStat();
         AchievementPage.registerAchievementPage(new AchievementPage("BlockSmith",
                 new Achievement[]
                 {
                 BlockSmith.craftTable, BlockSmith.deconstructAny, BlockSmith.deconstructDiamondHoe, BlockSmith.deconstructJunk, BlockSmith.deconstructDiamondShovel, BlockSmith.theHatStandAchievement
                 }));
 
-        BlockSmith.deconstructedItemsStat = (StatBasic) (new StatBasic("stat.deconstructeditems", new ChatComponentTranslation("stat.deconstructeditems", new Object[0])).registerStat());
+        BlockSmith.deconstructedItemsStat = (StatBasic) (new StatBasic("stat.deconstructeditems", new TextComponentTranslation("stat.deconstructeditems", new Object[0])).registerStat());
         
     }
     

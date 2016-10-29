@@ -20,6 +20,7 @@ import java.util.Random;
 
 import com.blogspot.jabelarminecraft.blocksmith.BlockSmith;
 import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityCompactor;
+import com.blogspot.jabelarminecraft.blocksmith.utilities.Utilities;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
@@ -59,7 +60,7 @@ public class BlockCompactor extends BlockContainer
     public BlockCompactor()
     {
         super(Material.ROCK);
-        setUnlocalizedName("compactor");
+        Utilities.setBlockName(this, "compactor");
         setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
         isCompacting = false;
         setCreativeTab(CreativeTabs.DECORATIONS);

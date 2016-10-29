@@ -3,6 +3,8 @@
  */
 package com.blogspot.jabelarminecraft.blocksmith.items;
 
+import com.blogspot.jabelarminecraft.blocksmith.utilities.Utilities;
+
 import net.minecraft.item.ItemSword;
 
 /**
@@ -14,7 +16,7 @@ public class ItemSwordExtended extends ItemSword implements IExtendedReach
 	public ItemSwordExtended(ToolMaterial parMaterial) 
 	{
 		super(parMaterial);
-		setUnlocalizedName("swordExtended");
+		Utilities.setItemName(this, "swordExtended");
 	}
 
 	@Override

@@ -16,23 +16,25 @@
 
 package com.blogspot.jabelarminecraft.blocksmith.blocks;
 
+import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityMovingLightSource;
+import com.blogspot.jabelarminecraft.blocksmith.utilities.Utilities;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.state.BlockState;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumWorldBlockLayer;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityMovingLightSource;
 
 /**
  * @author jabelar
@@ -43,28 +45,22 @@ public class BlockMovingLightSource extends Block implements ITileEntityProvider
 
     public BlockMovingLightSource()
     {
-        super(Material.air );
-        setUnlocalizedName("movinglightsource");
+        super(Material.AIR );
+        Utilities.setBlockName(this, "movinglightsource");
         setDefaultState(blockState.getBaseState());
         setTickRandomly(false);
         setLightLevel(1.0F);
-        setBlockBounds(0.5F, 0.5F, 0.5F, 0.5F, 0.5F, 0.5F);
+        // setBlockBounds(0.5F, 0.5F, 0.5F, 0.5F, 0.5F, 0.5F);
     }
 
     @Override
-    public AxisAlignedBB getCollisionBoundingBox(World worldIn, BlockPos pos, IBlockState state)
+    public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess worldIn, BlockPos pos)
     {
         return null;
     }
 
     @Override
-    public boolean isOpaqueCube()
-    {
-        return false;
-    }
-
-    @Override
-    public boolean isFullCube()
+    public boolean isFullCube(IBlockState state)
     {
         return false;
     }
@@ -91,7 +87,7 @@ public class BlockMovingLightSource extends Block implements ITileEntityProvider
      * Called when a neighboring block changes.
      */
     @Override
-    public void onNeighborBlockChange(World worldIn, BlockPos pos, IBlockState state, Block neighborBlock)
+    public void onNeighborChange(IBlockAccess worldIn, BlockPos pos, BlockPos neighborBlockPos)
     {
         return;
     }
@@ -110,9 +106,9 @@ public class BlockMovingLightSource extends Block implements ITileEntityProvider
 
     @Override
     @SideOnly(Side.CLIENT)
-    public EnumWorldBlockLayer getBlockLayer()
+    public BlockRenderLayer getBlockLayer()
     {
-        return EnumWorldBlockLayer.CUTOUT;
+        return BlockRenderLayer.CUTOUT;
     }
 
     @Override
@@ -128,9 +124,9 @@ public class BlockMovingLightSource extends Block implements ITileEntityProvider
     }
 
     @Override
-    protected BlockState createBlockState()
+    protected BlockStateContainer createBlockState()
     {
-        return new BlockState(this);
+        return new BlockStateContainer(this);
     }
 
     @Override

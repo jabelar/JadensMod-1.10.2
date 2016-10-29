@@ -20,12 +20,12 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.google.common.collect.Maps;
+
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-
-import com.google.common.collect.Maps;
 
 /**
  * @author jabelar
@@ -45,9 +45,9 @@ public class CompactorRecipes
 
     private CompactorRecipes()
     {
-        addCompactingRecipe(new ItemStack(Item.getItemFromBlock(Blocks.sand), 2, 0), new ItemStack(Item.getItemFromBlock(Blocks.gravel)), 0.7F);
-        addCompactingRecipe(new ItemStack(Items.slime_ball, 4, 0), new ItemStack(Item.getItemFromBlock(Blocks.slime_block)), 0.7F);
-        addCompactingRecipe(new ItemStack(Items.blaze_powder, 2, 0), new ItemStack(Items.blaze_rod), 0.7F);
+        addCompactingRecipe(new ItemStack(Item.getItemFromBlock(Blocks.SAND), 2, 0), new ItemStack(Item.getItemFromBlock(Blocks.GRAVEL)), 0.7F);
+        addCompactingRecipe(new ItemStack(Items.SLIME_BALL, 4, 0), new ItemStack(Item.getItemFromBlock(Blocks.SLIME_BLOCK)), 0.7F);
+        addCompactingRecipe(new ItemStack(Items.BLAZE_POWDER, 2, 0), new ItemStack(Items.BLAZE_ROD), 0.7F);
     }
 
     public void addCompactingRecipe(ItemStack parItemStackIn, ItemStack parItemStackOut, float parExperience)

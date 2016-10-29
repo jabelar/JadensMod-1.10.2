@@ -18,12 +18,16 @@ package com.blogspot.jabelarminecraft.blocksmith.blocks;
 
 import java.util.Random;
 
-import net.minecraft.block.Block;
+import com.blogspot.jabelarminecraft.blocksmith.BlockSmith;
+import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityGrinder;
+import com.blogspot.jabelarminecraft.blocksmith.utilities.Utilities;
+
 import net.minecraft.block.BlockContainer;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.state.BlockState;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
@@ -33,14 +37,13 @@ import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.blogspot.jabelarminecraft.blocksmith.BlockSmith;
-import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityGrinder;
 
 /**
  * @author jabelar
@@ -54,15 +57,14 @@ public class BlockGrinder extends BlockContainer
 
     public BlockGrinder()
     {
-        super(Material.rock);
-        setUnlocalizedName("grinder");
+        super(Material.ROCK);
+        Utilities.setBlockName(this, "grinder");
         setDefaultState(blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
         isGrinding = true;
-        setCreativeTab(CreativeTabs.tabDecorations);
-        stepSound = soundTypeSnow;
+        setCreativeTab(CreativeTabs.DECORATIONS);
+        blockSoundType = SoundType.SNOW;
         blockParticleGravity = 1.0F;
         slipperiness = 0.6F;
-        setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
         lightOpacity = 20; // cast a light shadow
         setTickRandomly(false);
         useNeighborBrightness = false;
@@ -85,11 +87,11 @@ public class BlockGrinder extends BlockContainer
         if (!parWorld.isRemote)
         {
         	// Rotate block if the front side is blocked
-            Block blockToNorth = parWorld.getBlockState(parBlockPos.north()).getBlock();
-            Block blockToSouth = parWorld.getBlockState(parBlockPos.south()).getBlock();
-            Block blockToWest = parWorld.getBlockState(parBlockPos.west()).getBlock();
-            Block blockToEast = parWorld.getBlockState(parBlockPos.east()).getBlock();
-            EnumFacing enumfacing = (EnumFacing)parIBlockState.getValue(FACING);
+            IBlockState blockToNorth = parWorld.getBlockState(parBlockPos.north());
+            IBlockState blockToSouth = parWorld.getBlockState(parBlockPos.south());
+            IBlockState blockToWest = parWorld.getBlockState(parBlockPos.west());
+            IBlockState blockToEast = parWorld.getBlockState(parBlockPos.east());
+            EnumFacing enumfacing = parIBlockState.getValue(FACING);
 
             if (enumfacing == EnumFacing.NORTH && blockToNorth.isFullBlock() && !blockToSouth.isFullBlock())
             {
@@ -118,7 +120,7 @@ public class BlockGrinder extends BlockContainer
     {
 //        if (isGrinding)
 //        {
-//            EnumFacing enumfacing = (EnumFacing)parIBlockState.getValue(FACING);
+//            EnumFacing enumFacing = (EnumFacing)parIBlockState.getValue(FACING);
 //            double d0 = parBlockPos.getX() + 0.5D;
 //            double d1 = parBlockPos.getY() + parRand.nextDouble() * 6.0D / 16.0D;
 //            double d2 = parBlockPos.getZ() + 0.5D;
@@ -146,7 +148,7 @@ public class BlockGrinder extends BlockContainer
     }
 
     @Override
-	public boolean onBlockActivated(World parWorld, BlockPos parBlockPos, IBlockState parIBlockState, EntityPlayer parPlayer, EnumFacing parSide, float hitX, float hitY, float hitZ)
+	public boolean onBlockActivated(World parWorld, BlockPos parBlockPos, IBlockState parIBlockState, EntityPlayer parPlayer, EnumHand parHand, ItemStack parStack, EnumFacing parFacing, float hitX, float hitY, float hitZ)
     {
         if (!parWorld.isRemote)
         {
@@ -160,19 +162,19 @@ public class BlockGrinder extends BlockContainer
 
     public static void changeBlockBasedOnGrindingStatus(boolean parIsGrinding, World parWorld, BlockPos parBlockPos)
     {
-//        IBlockState iBlockState = parWorld.getBlockState(parBlockPos);
+//        IBlockState iBlockStateContainer = parWorld.getBlockState(parBlockPos);
 //        TileEntity tileentity = parWorld.getTileEntity(parBlockPos);
 //        hasTileEntity = true;
 //
 //        if (parIsGrinding)
 //        {
-//            parWorld.setBlockState(parBlockPos, BlockSmith.blockActiveGrinder.getDefaultState().withProperty(FACING, iBlockState.getValue(FACING)), 3);
-//            parWorld.setBlockState(parBlockPos, BlockSmith.blockActiveGrinder.getDefaultState().withProperty(FACING, iBlockState.getValue(FACING)), 3);
+//            parWorld.setBlockState(parBlockPos, BlockSmith.blockActiveGrinder.getDefaultState().withProperty(FACING, iBlockStateContainer.getValue(FACING)), 3);
+//            parWorld.setBlockState(parBlockPos, BlockSmith.blockActiveGrinder.getDefaultState().withProperty(FACING, iBlockStateContainer.getValue(FACING)), 3);
 //        }
 //        else
 //        {
-//            parWorld.setBlockState(parBlockPos, BlockSmith.blockGrinder.getDefaultState().withProperty(FACING, iBlockState.getValue(FACING)), 3);
-//            parWorld.setBlockState(parBlockPos, BlockSmith.blockGrinder.getDefaultState().withProperty(FACING, iBlockState.getValue(FACING)), 3);
+//            parWorld.setBlockState(parBlockPos, BlockSmith.blockGrinder.getDefaultState().withProperty(FACING, iBlockStateContainer.getValue(FACING)), 3);
+//            parWorld.setBlockState(parBlockPos, BlockSmith.blockGrinder.getDefaultState().withProperty(FACING, iBlockStateContainer.getValue(FACING)), 3);
 //        }
 //
 //        hasTileEntity = false;
@@ -235,45 +237,36 @@ public class BlockGrinder extends BlockContainer
     }
 
     @Override
-	public boolean hasComparatorInputOverride()
+	public boolean hasComparatorInputOverride(IBlockState parIBlockState)
     {
         return true;
     }
 
     @Override
-	public int getComparatorInputOverride(World worldIn, BlockPos pos)
+	public int getComparatorInputOverride(IBlockState parIBlockState, World worldIn, BlockPos pos)
     {
         return Container.calcRedstone(worldIn.getTileEntity(pos));
     }
 
     @Override
 	@SideOnly(Side.CLIENT)
-    public Item getItem(World worldIn, BlockPos pos)
+    public ItemStack getItem(World worldIn, BlockPos pos, IBlockState parIBlockState)
     {
-        return Item.getItemFromBlock(BlockSmith.blockGrinder);
+        return new ItemStack(Item.getItemFromBlock(BlockSmith.blockGrinder));
     }
 
     /**
      * The type of render function that is called for this block
      */
     @Override
-	public int getRenderType()
+	public EnumBlockRenderType getRenderType(IBlockState parIBlockState)
     {
-        return 3;
+        return EnumBlockRenderType.MODEL;
     }
 
-    /**
-     * Possibly modify the given BlockState before rendering it on an Entity (Minecarts, Endermen, ...)
-     */
-    @Override
-	@SideOnly(Side.CLIENT)
-    public IBlockState getStateForEntityRender(IBlockState state)
-    {
-        return getDefaultState().withProperty(FACING, EnumFacing.SOUTH);
-    }
 
     /**
-     * Convert the given metadata into a BlockState for this Block
+     * Convert the given metadata into a BlockStateContainer for this Block
      */
     @Override
 	public IBlockState getStateFromMeta(int meta)
@@ -289,18 +282,23 @@ public class BlockGrinder extends BlockContainer
     }
 
     /**
-     * Convert the BlockState into the correct metadata value
+     * Convert the BlockStateContainer into the correct metadata value
      */
     @Override
 	public int getMetaFromState(IBlockState state)
     {
-        return ((EnumFacing)state.getValue(FACING)).getIndex();
+        return state.getValue(FACING).getIndex();
     }
 
     @Override
-	protected BlockState createBlockState()
+	protected BlockStateContainer createBlockState()
     {
-        return new BlockState(this, new IProperty[] {FACING});
+        return new BlockStateContainer(this, new IProperty[] {FACING});
+    }
+
+    public boolean isGrinding()
+    {
+        return isGrinding;
     }
 
     @SideOnly(Side.CLIENT)

@@ -52,32 +52,32 @@ public class DeconstructingAdjustedRecipes
     {
         theItem = parInputItemStack.getItem();
         theMetadata = theItem.getMetadata(parInputItemStack);
-        if (theItem == Items.oak_door) return outputForWoodenDoor(0);
-        if (theItem == Items.spruce_door) return outputForWoodenDoor(1);
-        else if (theItem == Items.birch_door) return outputForWoodenDoor(2);
-        else if (theItem == Items.jungle_door) return outputForWoodenDoor(3);
-        else if (theItem == Items.acacia_door) return outputForWoodenDoor(4);
-        else if (theItem == Items.dark_oak_door) return outputForWoodenDoor(5);
-        else if (theItem == Items.iron_door)
+        if (theItem == Items.OAK_DOOR) return outputForWoodenDoor(0);
+        if (theItem == Items.SPRUCE_DOOR) return outputForWoodenDoor(1);
+        else if (theItem == Items.BIRCH_DOOR) return outputForWoodenDoor(2);
+        else if (theItem == Items.JUNGLE_DOOR) return outputForWoodenDoor(3);
+        else if (theItem == Items.ACACIA_DOOR) return outputForWoodenDoor(4);
+        else if (theItem == Items.DARK_OAK_DOOR) return outputForWoodenDoor(5);
+        else if (theItem == Items.IRON_DOOR)
         {
             return new ItemStack[] {
-                    new ItemStack(Items.iron_ingot, 1, 0),
-                    new ItemStack(Items.iron_ingot, 1, 0),
+                    new ItemStack(Items.IRON_INGOT, 1, 0),
+                    new ItemStack(Items.IRON_INGOT, 1, 0),
                     null, null, null, null, null, null, null
             };
         }
-        else if (theItem == Items.paper) return outputSingle(Items.reeds);
-        else if (theItem == Items.stick) return outputSingle(Blocks.planks);
-        else if (theItem == Item.getItemFromBlock(Blocks.ladder))
+        else if (theItem == Items.PAPER) return outputSingle(Items.REEDS);
+        else if (theItem == Items.STICK) return outputSingle(Blocks.PLANKS);
+        else if (theItem == Item.getItemFromBlock(Blocks.LADDER))
         {
             if (divideByThreeCounter <= 0)
             {
                 decrementDivideByThreeCounter();
                 return new ItemStack[] {
                         null, null, null,
-                        new ItemStack(Items.stick, 1, 0),
-                        new ItemStack(Items.stick, 1, 0), 
-                        new ItemStack(Items.stick, 1, 0), 
+                        new ItemStack(Items.STICK, 1, 0),
+                        new ItemStack(Items.STICK, 1, 0), 
+                        new ItemStack(Items.STICK, 1, 0), 
                         null, null, null
                 };
             }
@@ -85,9 +85,9 @@ public class DeconstructingAdjustedRecipes
             {
                 decrementDivideByThreeCounter();
                 return new ItemStack[] {
-                        new ItemStack(Items.stick, 1, 0),
+                        new ItemStack(Items.STICK, 1, 0),
                         null,
-                        new ItemStack(Items.stick, 1, 0), 
+                        new ItemStack(Items.STICK, 1, 0), 
                         null, null, null, null, null, null
                 };
             }
@@ -96,45 +96,45 @@ public class DeconstructingAdjustedRecipes
                 decrementDivideByThreeCounter();
                 return new ItemStack[] {
                         null, null, null, null, null, null,
-                        new ItemStack(Items.stick, 1, 0),
+                        new ItemStack(Items.STICK, 1, 0),
                         null,
-                        new ItemStack(Items.stick, 1, 0), 
+                        new ItemStack(Items.STICK, 1, 0), 
                 };
             }
         }
-        else if (theItem == Item.getItemFromBlock(Blocks.oak_fence)) return outputForWoodenFence(0);
-        else if (theItem == Item.getItemFromBlock(Blocks.spruce_fence)) return outputForWoodenFence(1);
-        else if (theItem == Item.getItemFromBlock(Blocks.birch_fence)) return outputForWoodenFence(2);
-        else if (theItem == Item.getItemFromBlock(Blocks.jungle_fence)) return outputForWoodenFence(3);
-        else if (theItem == Item.getItemFromBlock(Blocks.acacia_fence)) return outputForWoodenFence(4);
-        else if (theItem == Item.getItemFromBlock(Blocks.dark_oak_fence)) return outputForWoodenFence(5);
-        else if (theItem == Items.enchanted_book)
+        else if (theItem == Item.getItemFromBlock(Blocks.OAK_FENCE)) return outputForWoodenFence(0);
+        else if (theItem == Item.getItemFromBlock(Blocks.SPRUCE_FENCE)) return outputForWoodenFence(1);
+        else if (theItem == Item.getItemFromBlock(Blocks.BIRCH_FENCE)) return outputForWoodenFence(2);
+        else if (theItem == Item.getItemFromBlock(Blocks.JUNGLE_FENCE)) return outputForWoodenFence(3);
+        else if (theItem == Item.getItemFromBlock(Blocks.ACACIA_FENCE)) return outputForWoodenFence(4);
+        else if (theItem == Item.getItemFromBlock(Blocks.DARK_OAK_FENCE)) return outputForWoodenFence(5);
+        else if (theItem == Items.ENCHANTED_BOOK)
         {
             return new ItemStack[] {
                     null, 
-                    new ItemStack(Items.reeds, 1, 0),
+                    new ItemStack(Items.REEDS, 1, 0),
                     null,
                     null, 
-                    new ItemStack(Items.reeds, 1, 0),
+                    new ItemStack(Items.REEDS, 1, 0),
                     null,
                     null, 
-                    new ItemStack(Items.reeds, 1, 0),
+                    new ItemStack(Items.REEDS, 1, 0),
                     null
             };
         }
-        else if (theItem == Item.getItemFromBlock(Blocks.nether_brick_fence)) return outputSingle(Blocks.nether_brick);
-        else if (theItem == Item.getItemFromBlock(Blocks.wooden_slab)) return outputSingle(Blocks.planks, theMetadata);
-        else if (theItem == Item.getItemFromBlock(Blocks.stone_slab)) return outputForStoneSlab();
-        else if (theItem == Item.getItemFromBlock(Blocks.stone_slab2)) return outputSingle(Blocks.red_sandstone);
-        else if (theItem == Items.sign)
+        else if (theItem == Item.getItemFromBlock(Blocks.NETHER_BRICK_FENCE)) return outputSingle(Blocks.NETHER_BRICK);
+        else if (theItem == Item.getItemFromBlock(Blocks.WOODEN_SLAB)) return outputSingle(Blocks.PLANKS, theMetadata);
+        else if (theItem == Item.getItemFromBlock(Blocks.STONE_SLAB)) return outputForStoneSlab();
+        else if (theItem == Item.getItemFromBlock(Blocks.STONE_SLAB2)) return outputSingle(Blocks.RED_SANDSTONE);
+        else if (theItem == Items.SIGN)
         {
-            ItemStack planksItemStack = new ItemStack(Item.getItemFromBlock(Blocks.planks), 1, 0);
+            ItemStack PLANKSItemStack = new ItemStack(Item.getItemFromBlock(Blocks.PLANKS), 1, 0);
             if (divideByThreeCounter == 2)
             {
                 decrementDivideByThreeCounter();
                 return new ItemStack[] {
-                        planksItemStack, null, null,
-                        planksItemStack, null, null, 
+                        PLANKSItemStack, null, null,
+                        PLANKSItemStack, null, null, 
                         null, null, null
                 };
             }
@@ -142,23 +142,23 @@ public class DeconstructingAdjustedRecipes
             {
                 decrementDivideByThreeCounter();
                 return new ItemStack[] {
-                        null, planksItemStack, null, 
-                        null, planksItemStack, null, 
-                        null, new ItemStack(Items.stick, 1, 0), null
+                        null, PLANKSItemStack, null, 
+                        null, PLANKSItemStack, null, 
+                        null, new ItemStack(Items.STICK, 1, 0), null
                 };
             }
             else if (divideByThreeCounter == 1)
             {
                 decrementDivideByThreeCounter();
                 return new ItemStack[] {
-                        null, null, planksItemStack, 
-                        null, null, planksItemStack,
+                        null, null, PLANKSItemStack, 
+                        null, null, PLANKSItemStack,
                         null, null, null
                 };
             }
         }
-        else if (theItem == Items.glass_bottle) return outputSingle(Blocks.glass);
-        else if (theItem == Item.getItemFromBlock(Blocks.rail))
+        else if (theItem == Items.GLASS_BOTTLE) return outputSingle(Blocks.GLASS);
+        else if (theItem == Item.getItemFromBlock(Blocks.RAIL))
         {
             // DEBUG
             System.out.println("Divide by two counter = "+divideByTwoCounter);
@@ -166,22 +166,22 @@ public class DeconstructingAdjustedRecipes
             {
                 decrementDivideByTwoCounter();
                 return new ItemStack[] {
-                        new ItemStack(Items.iron_ingot, 1, 0), null, null,
-                        new ItemStack(Items.iron_ingot, 1, 0), null, null,
-                        new ItemStack(Items.iron_ingot, 1, 0), null, null
+                        new ItemStack(Items.IRON_INGOT, 1, 0), null, null,
+                        new ItemStack(Items.IRON_INGOT, 1, 0), null, null,
+                        new ItemStack(Items.IRON_INGOT, 1, 0), null, null
                 };
             }
             else if (divideByTwoCounter == 0)
             {
                 decrementDivideByTwoCounter();
                 return new ItemStack[] {
-                        null, null, new ItemStack(Items.iron_ingot, 1, 0),
-                        null, new ItemStack(Items.stick, 1, 0), new ItemStack(Items.iron_ingot, 1, 0),
-                        null, null, new ItemStack(Items.iron_ingot, 1, 0)
+                        null, null, new ItemStack(Items.IRON_INGOT, 1, 0),
+                        null, new ItemStack(Items.STICK, 1, 0), new ItemStack(Items.IRON_INGOT, 1, 0),
+                        null, null, new ItemStack(Items.IRON_INGOT, 1, 0)
                 };
             }
         }
-        else if (theItem == Item.getItemFromBlock(Blocks.golden_rail))
+        else if (theItem == Item.getItemFromBlock(Blocks.GOLDEN_RAIL))
         {
             // DEBUG
             System.out.println("Divide by two counter = "+divideByTwoCounter);
@@ -189,22 +189,22 @@ public class DeconstructingAdjustedRecipes
             {
                 decrementDivideByTwoCounter();
                 return new ItemStack[] {
-                        new ItemStack(Items.gold_ingot, 1, 0), null, null,
-                        new ItemStack(Items.gold_ingot, 1, 0), new ItemStack(Items.stick, 1, 0), null,
-                        new ItemStack(Items.gold_ingot, 1, 0), null, null
+                        new ItemStack(Items.GOLD_INGOT, 1, 0), null, null,
+                        new ItemStack(Items.GOLD_INGOT, 1, 0), new ItemStack(Items.STICK, 1, 0), null,
+                        new ItemStack(Items.GOLD_INGOT, 1, 0), null, null
                 };
             }
             else if (divideByTwoCounter == 0)
             {
                 decrementDivideByTwoCounter();
                 return new ItemStack[] {
-                        null, null, new ItemStack(Items.gold_ingot, 1, 0),
-                        null, null, new ItemStack(Items.gold_ingot, 1, 0),
-                        null, new ItemStack(Items.redstone), new ItemStack(Items.gold_ingot, 1, 0)
+                        null, null, new ItemStack(Items.GOLD_INGOT, 1, 0),
+                        null, null, new ItemStack(Items.GOLD_INGOT, 1, 0),
+                        null, new ItemStack(Items.REDSTONE), new ItemStack(Items.GOLD_INGOT, 1, 0)
                 };
             }
         }
-        else if (theItem == Item.getItemFromBlock(Blocks.activator_rail))
+        else if (theItem == Item.getItemFromBlock(Blocks.ACTIVATOR_RAIL))
         {
             // DEBUG
             System.out.println("Divide by two counter = "+divideByTwoCounter);
@@ -212,22 +212,22 @@ public class DeconstructingAdjustedRecipes
             {
                 decrementDivideByTwoCounter();
                 return new ItemStack[] {
-                        new ItemStack(Items.iron_ingot, 1, 0), new ItemStack(Items.stick, 1, 0), null,
-                        new ItemStack(Items.iron_ingot, 1, 0), null, null,
-                        new ItemStack(Items.iron_ingot, 1, 0), null, null
+                        new ItemStack(Items.IRON_INGOT, 1, 0), new ItemStack(Items.STICK, 1, 0), null,
+                        new ItemStack(Items.IRON_INGOT, 1, 0), null, null,
+                        new ItemStack(Items.IRON_INGOT, 1, 0), null, null
                 };
             }
             else if (divideByTwoCounter == 0)
             {
                 decrementDivideByTwoCounter();
                 return new ItemStack[] {
-                        null, null, new ItemStack(Items.iron_ingot, 1, 0),
-                        null, new ItemStack(Item.getItemFromBlock(Blocks.redstone_torch), 1, 0), new ItemStack(Items.iron_ingot, 1, 0),
-                        null, new ItemStack(Items.stick, 1, 0), new ItemStack(Items.iron_ingot, 1, 0)
+                        null, null, new ItemStack(Items.IRON_INGOT, 1, 0),
+                        null, new ItemStack(Item.getItemFromBlock(Blocks.REDSTONE_TORCH), 1, 0), new ItemStack(Items.IRON_INGOT, 1, 0),
+                        null, new ItemStack(Items.STICK, 1, 0), new ItemStack(Items.IRON_INGOT, 1, 0)
                 };
             }
         }
-        else if (theItem == Item.getItemFromBlock(Blocks.detector_rail))
+        else if (theItem == Item.getItemFromBlock(Blocks.DETECTOR_RAIL))
         {
             // DEBUG
             System.out.println("Divide by two counter = "+divideByTwoCounter);
@@ -235,57 +235,57 @@ public class DeconstructingAdjustedRecipes
             {
                 decrementDivideByTwoCounter();
                 return new ItemStack[] {
-                        new ItemStack(Items.iron_ingot, 1, 0), null, null,
-                        new ItemStack(Items.iron_ingot, 1, 0), new ItemStack(Item.getItemFromBlock(Blocks.stone_pressure_plate), 1, 0), null,
-                        new ItemStack(Items.iron_ingot, 1, 0), null, null
+                        new ItemStack(Items.IRON_INGOT, 1, 0), null, null,
+                        new ItemStack(Items.IRON_INGOT, 1, 0), new ItemStack(Item.getItemFromBlock(Blocks.STONE_PRESSURE_PLATE), 1, 0), null,
+                        new ItemStack(Items.IRON_INGOT, 1, 0), null, null
                 };
             }
             else if (divideByTwoCounter == 0)
             {
                 decrementDivideByTwoCounter();
                 return new ItemStack[] {
-                        null, null, new ItemStack(Items.iron_ingot, 1, 0),
-                        null, null, new ItemStack(Items.iron_ingot, 1, 0),
-                        null, new ItemStack(Items.redstone), new ItemStack(Items.iron_ingot, 1, 0)
+                        null, null, new ItemStack(Items.IRON_INGOT, 1, 0),
+                        null, null, new ItemStack(Items.IRON_INGOT, 1, 0),
+                        null, new ItemStack(Items.REDSTONE), new ItemStack(Items.IRON_INGOT, 1, 0)
                 };
             }
         }
-        else if (theItem == Item.getItemFromBlock(Blocks.glass_pane))
+        else if (theItem == Item.getItemFromBlock(Blocks.GLASS_PANE))
         {
             return new ItemStack[] {
                     null, null, null, null, null, null,
-                    new ItemStack(Item.getItemFromBlock(Blocks.glass), 1, 0), 
-                    new ItemStack(Item.getItemFromBlock(Blocks.glass), 1, 0), 
-                    new ItemStack(Item.getItemFromBlock(Blocks.glass), 1, 0)
+                    new ItemStack(Item.getItemFromBlock(Blocks.GLASS), 1, 0), 
+                    new ItemStack(Item.getItemFromBlock(Blocks.GLASS), 1, 0), 
+                    new ItemStack(Item.getItemFromBlock(Blocks.GLASS), 1, 0)
             };
         }
-        else if (theItem == Item.getItemFromBlock(Blocks.stained_glass_pane))
+        else if (theItem == Item.getItemFromBlock(Blocks.STAINED_GLASS_PANE))
         {
             return new ItemStack[] {
                     null, null, null, null, null, null,
-                    new ItemStack(Item.getItemFromBlock(Blocks.stained_glass), 1, theMetadata), 
-                    new ItemStack(Item.getItemFromBlock(Blocks.stained_glass), 1, theMetadata), 
-                    new ItemStack(Item.getItemFromBlock(Blocks.stained_glass), 1, theMetadata)
+                    new ItemStack(Item.getItemFromBlock(Blocks.STAINED_GLASS), 1, theMetadata), 
+                    new ItemStack(Item.getItemFromBlock(Blocks.STAINED_GLASS), 1, theMetadata), 
+                    new ItemStack(Item.getItemFromBlock(Blocks.STAINED_GLASS), 1, theMetadata)
             };
         }
-        else if (theItem == Item.getItemFromBlock(Blocks.cobblestone_wall)) return outputSingle(Blocks.cobblestone);
-        else if (theItem == Item.getItemFromBlock(Blocks.quartz_block)) return outputForQuartz();
-        else if (theItem == Item.getItemFromBlock(Blocks.stained_hardened_clay)) return outputForHardenedClay();
+        else if (theItem == Item.getItemFromBlock(Blocks.COBBLESTONE_WALL)) return outputSingle(Blocks.COBBLESTONE);
+        else if (theItem == Item.getItemFromBlock(Blocks.QUARTZ_BLOCK)) return outputForQuartz();
+        else if (theItem == Item.getItemFromBlock(Blocks.STAINED_HARDENED_CLAY)) return outputForHardenedClay();
         // Wooden stairs
-        else if (theItem == Item.getItemFromBlock(Blocks.oak_stairs)) return outputForStairs(new ItemStack(Item.getItemFromBlock(Blocks.planks), 1, 0));
-        else if (theItem == Item.getItemFromBlock(Blocks.spruce_stairs)) return outputForStairs(new ItemStack(Item.getItemFromBlock(Blocks.planks), 1, 1));
-        else if (theItem == Item.getItemFromBlock(Blocks.birch_stairs)) return outputForStairs(new ItemStack(Item.getItemFromBlock(Blocks.planks), 1, 2));
-        else if (theItem == Item.getItemFromBlock(Blocks.jungle_stairs)) return outputForStairs(new ItemStack(Item.getItemFromBlock(Blocks.planks), 1, 3));
-        else if (theItem == Item.getItemFromBlock(Blocks.acacia_stairs)) return outputForStairs(new ItemStack(Item.getItemFromBlock(Blocks.planks), 1, 4));
-        else if (theItem == Item.getItemFromBlock(Blocks.dark_oak_stairs)) return outputForStairs(new ItemStack(Item.getItemFromBlock(Blocks.planks), 1, 5));
+        else if (theItem == Item.getItemFromBlock(Blocks.OAK_STAIRS)) return outputForStairs(new ItemStack(Item.getItemFromBlock(Blocks.PLANKS), 1, 0));
+        else if (theItem == Item.getItemFromBlock(Blocks.SPRUCE_STAIRS)) return outputForStairs(new ItemStack(Item.getItemFromBlock(Blocks.PLANKS), 1, 1));
+        else if (theItem == Item.getItemFromBlock(Blocks.BIRCH_STAIRS)) return outputForStairs(new ItemStack(Item.getItemFromBlock(Blocks.PLANKS), 1, 2));
+        else if (theItem == Item.getItemFromBlock(Blocks.JUNGLE_STAIRS)) return outputForStairs(new ItemStack(Item.getItemFromBlock(Blocks.PLANKS), 1, 3));
+        else if (theItem == Item.getItemFromBlock(Blocks.ACACIA_STAIRS)) return outputForStairs(new ItemStack(Item.getItemFromBlock(Blocks.PLANKS), 1, 4));
+        else if (theItem == Item.getItemFromBlock(Blocks.DARK_OAK_STAIRS)) return outputForStairs(new ItemStack(Item.getItemFromBlock(Blocks.PLANKS), 1, 5));
         // Stone stairs
-        else if (theItem == Item.getItemFromBlock(Blocks.sandstone_stairs)) return outputForStairs(new ItemStack(Item.getItemFromBlock(Blocks.sandstone)));
-        else if (theItem == Item.getItemFromBlock(Blocks.stone_stairs)) return outputForStairs(new ItemStack(Item.getItemFromBlock(Blocks.cobblestone)));
-        else if (theItem == Item.getItemFromBlock(Blocks.brick_stairs)) return outputForStairs(new ItemStack(Item.getItemFromBlock(Blocks.brick_block)));
-        else if (theItem == Item.getItemFromBlock(Blocks.nether_brick_stairs)) return outputForStairs(new ItemStack(Item.getItemFromBlock(Blocks.nether_brick)));
-        else if (theItem == Item.getItemFromBlock(Blocks.red_sandstone_stairs)) return outputForStairs(new ItemStack(Item.getItemFromBlock(Blocks.red_sandstone)));
-        else if (theItem == Item.getItemFromBlock(Blocks.stone_brick_stairs)) return outputForStairs(new ItemStack(Item.getItemFromBlock(Blocks.stonebrick)));
-        else if (theItem == Item.getItemFromBlock(Blocks.quartz_stairs)) return outputForStairs(new ItemStack(Item.getItemFromBlock(Blocks.quartz_block)));
+        else if (theItem == Item.getItemFromBlock(Blocks.SANDSTONE_STAIRS)) return outputForStairs(new ItemStack(Item.getItemFromBlock(Blocks.SANDSTONE)));
+        else if (theItem == Item.getItemFromBlock(Blocks.STONE_STAIRS)) return outputForStairs(new ItemStack(Item.getItemFromBlock(Blocks.COBBLESTONE)));
+        else if (theItem == Item.getItemFromBlock(Blocks.BRICK_STAIRS)) return outputForStairs(new ItemStack(Item.getItemFromBlock(Blocks.BRICK_BLOCK)));
+        else if (theItem == Item.getItemFromBlock(Blocks.NETHER_BRICK_STAIRS)) return outputForStairs(new ItemStack(Item.getItemFromBlock(Blocks.NETHER_BRICK)));
+        else if (theItem == Item.getItemFromBlock(Blocks.RED_SANDSTONE_STAIRS)) return outputForStairs(new ItemStack(Item.getItemFromBlock(Blocks.RED_SANDSTONE)));
+        else if (theItem == Item.getItemFromBlock(Blocks.STONE_BRICK_STAIRS)) return outputForStairs(new ItemStack(Item.getItemFromBlock(Blocks.STONEBRICK)));
+        else if (theItem == Item.getItemFromBlock(Blocks.QUARTZ_STAIRS)) return outputForStairs(new ItemStack(Item.getItemFromBlock(Blocks.QUARTZ_BLOCK)));
 
         // else no adjustments needed
         return parOutputItemStackArray ;
@@ -326,8 +326,8 @@ public class DeconstructingAdjustedRecipes
     private ItemStack[] outputForWoodenDoor(int parMetadata)
     {
         return new ItemStack[] {
-                new ItemStack(Item.getItemFromBlock(Blocks.planks), 1, parMetadata),
-                new ItemStack(Item.getItemFromBlock(Blocks.planks), 1, parMetadata),
+                new ItemStack(Item.getItemFromBlock(Blocks.PLANKS), 1, parMetadata),
+                new ItemStack(Item.getItemFromBlock(Blocks.PLANKS), 1, parMetadata),
                 null, null, null, null, null, null, null
         };
     }
@@ -335,14 +335,14 @@ public class DeconstructingAdjustedRecipes
     private ItemStack[] outputForWoodenFence(int parMetadata)
     {
         ItemStack[] resultItemStackArray = initItemStackArray();
-        ItemStack planksItemStack = new ItemStack(Item.getItemFromBlock(Blocks.planks), 1, parMetadata);
+        ItemStack PLANKSItemStack = new ItemStack(Item.getItemFromBlock(Blocks.PLANKS), 1, parMetadata);
         if (divideByThreeCounter == 2)
         {
             decrementDivideByThreeCounter();
             resultItemStackArray = new ItemStack[] {
                     null, null, null,
-                    planksItemStack,
-                    new ItemStack(Items.stick, 1, 0), 
+                    PLANKSItemStack,
+                    new ItemStack(Items.STICK, 1, 0), 
                     null, null, null, null
             };
         }
@@ -351,8 +351,8 @@ public class DeconstructingAdjustedRecipes
             decrementDivideByThreeCounter();
             resultItemStackArray = new ItemStack[] {
                     null, null, null, null, null, null, null,
-                    new ItemStack(Items.stick, 1, 0), 
-                    planksItemStack
+                    new ItemStack(Items.STICK, 1, 0), 
+                    PLANKSItemStack
             };
         }
         else if (divideByThreeCounter == 0)
@@ -360,8 +360,8 @@ public class DeconstructingAdjustedRecipes
             decrementDivideByThreeCounter();
             resultItemStackArray = new ItemStack[] {
                     null, null, null, null, null,
-                    planksItemStack,
-                    planksItemStack,
+                    PLANKSItemStack,
+                    PLANKSItemStack,
                     null, null
             };
         }
@@ -377,56 +377,56 @@ public class DeconstructingAdjustedRecipes
         if ((theMetadata&7) == 0)
         {
             resultItemStackArray = new ItemStack[] {
-                    new ItemStack(Item.getItemFromBlock(Blocks.stone), 1, 0),
+                    new ItemStack(Item.getItemFromBlock(Blocks.STONE), 1, 0),
                     null, null, null, null, null, null, null, null
             };
         }
         else if ((theMetadata&7) == 1)
         {
             resultItemStackArray = new ItemStack[] {
-                    new ItemStack(Item.getItemFromBlock(Blocks.sandstone), 1, 0),
+                    new ItemStack(Item.getItemFromBlock(Blocks.SANDSTONE), 1, 0),
                     null, null, null, null, null, null, null, null
             };
         }
-        else if ((theMetadata&7) == 2) // this is supposed to be "(stone) wooden slab" which I don't know what that is
+        else if ((theMetadata&7) == 2) // this is supposed to be "(STONE) wooden slab" which I don't know what that is
         {
             resultItemStackArray = new ItemStack[] {
-                    new ItemStack(Item.getItemFromBlock(Blocks.stone), 1, 0),
+                    new ItemStack(Item.getItemFromBlock(Blocks.STONE), 1, 0),
                     null, null, null, null, null, null, null, null
             };
         }
         else if ((theMetadata&7) == 3)
         {
             resultItemStackArray = new ItemStack[] {
-                    new ItemStack(Item.getItemFromBlock(Blocks.cobblestone), 1, 0),
+                    new ItemStack(Item.getItemFromBlock(Blocks.COBBLESTONE), 1, 0),
                     null, null, null, null, null, null, null, null
             };
         }
         else if ((theMetadata&7) == 4)
         {
             resultItemStackArray = new ItemStack[] {
-                    new ItemStack(Item.getItemFromBlock(Blocks.brick_block), 1, 0),
+                    new ItemStack(Item.getItemFromBlock(Blocks.BRICK_BLOCK), 1, 0),
                     null, null, null, null, null, null, null, null
             };
         }
         else if ((theMetadata&7) == 5)
         {
             resultItemStackArray = new ItemStack[] {
-                    new ItemStack(Item.getItemFromBlock(Blocks.stonebrick), 1, 0),
+                    new ItemStack(Item.getItemFromBlock(Blocks.STONEBRICK), 1, 0),
                     null, null, null, null, null, null, null, null
             };
         }
         else if ((theMetadata&7) == 6)
         {
             resultItemStackArray = new ItemStack[] {
-                    new ItemStack(Item.getItemFromBlock(Blocks.nether_brick), 1, 0),
+                    new ItemStack(Item.getItemFromBlock(Blocks.NETHER_BRICK), 1, 0),
                     null, null, null, null, null, null, null, null
             };
         }
         else if ((theMetadata&7) == 7)
         {
             resultItemStackArray = new ItemStack[] {
-                    new ItemStack(Item.getItemFromBlock(Blocks.quartz_block), 1, 0),
+                    new ItemStack(Item.getItemFromBlock(Blocks.QUARTZ_BLOCK), 1, 0),
                     null, null, null, null, null, null, null, null
             };
         }
@@ -436,23 +436,23 @@ public class DeconstructingAdjustedRecipes
     private ItemStack[] outputForQuartz()
     {
         ItemStack[] resultItemStackArray = initItemStackArray();
-        if (theMetadata == 0) // regular quartz block
+        if (theMetadata == 0) // regular QUARTZ block
         {
             resultItemStackArray = new ItemStack[] {
                     null, null, null,
-                    new ItemStack(Items.quartz, 1, 0), new ItemStack(Items.quartz, 1, 0), null,
-                    new ItemStack(Items.quartz, 1, 0), new ItemStack(Items.quartz, 1, 0), null
+                    new ItemStack(Items.QUARTZ, 1, 0), new ItemStack(Items.QUARTZ, 1, 0), null,
+                    new ItemStack(Items.QUARTZ, 1, 0), new ItemStack(Items.QUARTZ, 1, 0), null
             };
         }
-        else if (theMetadata == 1) // chizeled quartz block
+        else if (theMetadata == 1) // chizeled QUARTZ block
         {
             resultItemStackArray = new ItemStack[] {
                     null, null, null,
-                    null, new ItemStack(Item.getItemFromBlock(Blocks.stone_slab), 1, 7), null,
-                    null, new ItemStack(Item.getItemFromBlock(Blocks.stone_slab), 1, 7), null
+                    null, new ItemStack(Item.getItemFromBlock(Blocks.STONE_SLAB), 1, 7), null,
+                    null, new ItemStack(Item.getItemFromBlock(Blocks.STONE_SLAB), 1, 7), null
             };
         }
-        else if (theMetadata == 2 || theMetadata == 3 || theMetadata == 4) // pillar quartz block, any orientation
+        else if (theMetadata == 2 || theMetadata == 3 || theMetadata == 4) // pillar QUARTZ block, any orientation
         {
             if (divideByTwoCounter == 1)
             {
@@ -460,7 +460,7 @@ public class DeconstructingAdjustedRecipes
                 resultItemStackArray = new ItemStack[] {
                         null, null, null,
                         null, null, null,
-                        null, new ItemStack(Item.getItemFromBlock(Blocks.quartz_block), 1, 0), null
+                        null, new ItemStack(Item.getItemFromBlock(Blocks.QUARTZ_BLOCK), 1, 0), null
                 };
             }
             else if (divideByTwoCounter == 0)
@@ -468,7 +468,7 @@ public class DeconstructingAdjustedRecipes
                 decrementDivideByTwoCounter();
                 resultItemStackArray = new ItemStack[] {
                         null, null, null,
-                        null, new ItemStack(Item.getItemFromBlock(Blocks.quartz_block), 1, 0), null,
+                        null, new ItemStack(Item.getItemFromBlock(Blocks.QUARTZ_BLOCK), 1, 0), null,
                         null, null, null
                 };
             }
@@ -482,7 +482,7 @@ public class DeconstructingAdjustedRecipes
         {
             decrementDivideByEightCounter();
             return new ItemStack[] {
-                    new ItemStack(Item.getItemFromBlock(Blocks.clay), 1, 0), null, null,
+                    new ItemStack(Item.getItemFromBlock(Blocks.CLAY), 1, 0), null, null,
                     null, null, null,
                     null, null, null
             };
@@ -490,10 +490,10 @@ public class DeconstructingAdjustedRecipes
         else 
         {
             // DEBUG
-            System.out.println("Should output a dye");
+            System.out.println("Should output a DYE");
             decrementDivideByEightCounter();
             return new ItemStack[] {
-                    new ItemStack(Item.getItemFromBlock(Blocks.clay), 1, 0), new ItemStack(Items.dye, 1, convertClayMetaToDyeMeta(theMetadata)), null,
+                    new ItemStack(Item.getItemFromBlock(Blocks.CLAY), 1, 0), new ItemStack(Items.DYE, 1, convertClayMetaToDyeMeta(theMetadata)), null,
                     null, null, null,
                     null, null, null
             };
@@ -545,7 +545,7 @@ public class DeconstructingAdjustedRecipes
 
     private int convertClayMetaToDyeMeta(int parClayMeta)
     {
-        // for some reason dye and clay have reversed sequence of meta data values
+        // for some reason DYE and CLAY have reversed sequence of meta data values
         return 15-parClayMeta;
     }
     

@@ -3,6 +3,8 @@
  */
 package com.blogspot.jabelarminecraft.blocksmith.slots;
 
+import com.blogspot.jabelarminecraft.blocksmith.recipes.ForgeRecipes;
+
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
@@ -10,9 +12,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.stats.AchievementList;
-import net.minecraft.util.MathHelper;
-
-import com.blogspot.jabelarminecraft.blocksmith.recipes.ForgeRecipes;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * @author jabelar
@@ -114,14 +114,14 @@ public class SlotForgeOutput extends Slot
 
         net.minecraftforge.fml.common.FMLCommonHandler.instance().firePlayerSmeltedEvent(thePlayer, p_75208_1_);
 
-        if (p_75208_1_.getItem() == Items.iron_ingot)
+        if (p_75208_1_.getItem() == Items.IRON_INGOT)
         {
-            this.thePlayer.triggerAchievement(AchievementList.acquireIron);
+            this.thePlayer.addStat(AchievementList.ACQUIRE_IRON);
         }
 
-        if (p_75208_1_.getItem() == Items.cooked_fish)
+        if (p_75208_1_.getItem() == Items.COOKED_FISH)
         {
-            this.thePlayer.triggerAchievement(AchievementList.cookFish);
+            this.thePlayer.addStat(AchievementList.COOK_FISH);
         }
     }
 }

@@ -18,10 +18,15 @@ package com.blogspot.jabelarminecraft.blocksmith.blocks;
 
 import java.util.Random;
 
+import com.blogspot.jabelarminecraft.blocksmith.BlockSmith;
+import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityTanningRack;
+import com.blogspot.jabelarminecraft.blocksmith.utilities.Utilities;
+
 import net.minecraft.block.BlockContainer;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
-import net.minecraft.block.state.BlockState;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
@@ -31,16 +36,16 @@ import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.BlockRenderLayer;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumWorldBlockLayer;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.blogspot.jabelarminecraft.blocksmith.BlockSmith;
-import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityTanningRack;
 
 /**
  * @author jabelar
@@ -59,16 +64,21 @@ public class BlockTanningRack extends BlockContainer
         System.out.println("BlockTanningRack constructor");
         setDefaultState(blockState.getBaseState().withProperty(TANNING_INGREDIENT, 0));
         // override default values of Block, where appropriate
-        setUnlocalizedName("tanningrack");
-        setCreativeTab(CreativeTabs.tabDecorations);
-        stepSound = soundTypeSnow;
+        Utilities.setBlockName(this, "tanningrack");
+        setCreativeTab(CreativeTabs.DECORATIONS);
+        blockSoundType = SoundType.SNOW;
         blockParticleGravity = 1.0F;
         slipperiness = 0.6F;
-        setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
         lightOpacity = 20; // cast a light shadow
         setTickRandomly(false);
         useNeighborBrightness = false;
-        maxY = 1.5D; // make double height collision box
+    }
+    
+    @Override
+    public AxisAlignedBB getBoundingBox(IBlockState parIBlockState, IBlockAccess parWorld, BlockPos parBlockPos)
+    {
+        // bounding box is 1.5 blocks high to match model
+        return new AxisAlignedBB(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.5F);
     }
 
     public static void changeBlockBasedOnTanningStatus(int parTanningIngredient, World parWorld, BlockPos parBlockPos)
@@ -107,13 +117,13 @@ public class BlockTanningRack extends BlockContainer
 
     @Override
 	@SideOnly(Side.CLIENT)
-    public void randomDisplayTick(World worldIn, BlockPos pos, IBlockState state, Random rand)
+    public void randomDisplayTick(IBlockState state, World worldIn, BlockPos pos, Random rand)
     {
         // can create a particle effect here
     }
 
     @Override
-	public boolean onBlockActivated(World parWorld, BlockPos parBlockPos, IBlockState parIBlockState, EntityPlayer parPlayer, EnumFacing parSide, float hitX, float hitY, float hitZ)
+	public boolean onBlockActivated(World parWorld, BlockPos parBlockPos, IBlockState parIBlockState, EntityPlayer parPlayer, EnumHand parHand, ItemStack parStack, EnumFacing parSide, float hitX, float hitY, float hitZ)
     {
         if (!parWorld.isRemote)
         {
@@ -176,45 +186,36 @@ public class BlockTanningRack extends BlockContainer
     }
 
     @Override
-	public boolean hasComparatorInputOverride()
+	public boolean hasComparatorInputOverride(IBlockState parIBlockState)
     {
         return true;
     }
 
     @Override
-	public int getComparatorInputOverride(World worldIn, BlockPos pos)
+	public int getComparatorInputOverride(IBlockState parIBlockState, World worldIn, BlockPos pos)
     {
         return Container.calcRedstone(worldIn.getTileEntity(pos));
     }
 
     @Override
 	@SideOnly(Side.CLIENT)
-    public Item getItem(World worldIn, BlockPos pos)
+    public ItemStack getItem(World worldIn, BlockPos pos, IBlockState parIBlockState)
     {
-        return Item.getItemFromBlock(BlockSmith.blockTanningRack);
+        return new ItemStack(Item.getItemFromBlock(BlockSmith.blockTanningRack));
     }
 
     /**
      * The type of render function that is called for this block
      */
     @Override
-	public int getRenderType()
+	public EnumBlockRenderType getRenderType(IBlockState parIBlockState)
     {
-        return 3;
+        return EnumBlockRenderType.MODEL;
     }
     
-    /**
-     * Possibly modify the given BlockState before rendering it on an Entity (Minecarts, Endermen, ...)
-     */
-    @Override
-	@SideOnly(Side.CLIENT)
-    public IBlockState getStateForEntityRender(IBlockState state)
-    {
-        return state;
-    }
 
     /**
-     * Convert the given metadata into a BlockState for this Block
+     * Convert the given metadata into a BlockStateContainer for this Block
      */
     @Override
 	public IBlockState getStateFromMeta(int meta)
@@ -223,36 +224,36 @@ public class BlockTanningRack extends BlockContainer
     }
 
     /**
-     * Convert the BlockState into the correct metadata value
+     * Convert the BlockStateContainer into the correct metadata value
      */
     @Override
 	public int getMetaFromState(IBlockState state)
     {
-    	return (Integer) state.getValue(TANNING_INGREDIENT);
+    	return state.getValue(TANNING_INGREDIENT);
     }
 
     @Override
-	protected BlockState createBlockState()
+	protected BlockStateContainer createBlockState()
     {
-        return new BlockState(this, new IProperty[] {TANNING_INGREDIENT});
+        return new BlockStateContainer(this, new IProperty[] {TANNING_INGREDIENT});
     }
 
     @Override
     @SideOnly(Side.CLIENT)
-    public EnumWorldBlockLayer getBlockLayer()
+    public BlockRenderLayer getBlockLayer()
     {
-    	return EnumWorldBlockLayer.TRANSLUCENT;
+    	return BlockRenderLayer.TRANSLUCENT;
     }
     
     @Override
 	public boolean isBlockSolid(IBlockAccess parWorld, BlockPos parBlockPos, EnumFacing parSide)
     {
-    	return getMaterial().isSolid();
+    	return parWorld.getBlockState(parBlockPos).getMaterial().isSolid();
     }
     
     @Override
-	public boolean isOpaqueCube()
+	public boolean isOpaqueCube(IBlockState parIBlockState)
     {
-    	return getMaterial().isOpaque();
+    	return parIBlockState.getMaterial().isOpaque();
     }
 }

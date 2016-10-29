@@ -5,10 +5,14 @@ package com.blogspot.jabelarminecraft.blocksmith.blocks;
 
 import java.util.Random;
 
+import com.blogspot.jabelarminecraft.blocksmith.BlockSmith;
+import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityForge;
+import com.blogspot.jabelarminecraft.blocksmith.utilities.Utilities;
+
 import net.minecraft.block.BlockFurnace;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
-import net.minecraft.block.state.BlockState;
+import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
@@ -18,15 +22,12 @@ import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.blogspot.jabelarminecraft.blocksmith.BlockSmith;
-import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityForge;
 
 /**
  * @author agilroy
@@ -42,12 +43,12 @@ public class BlockForge extends BlockFurnace
 		super(parLit);
 		if (parLit)
 		{
-			setUnlocalizedName("forge_lit");
+			Utilities.setBlockName(this, "forge_lit");
 		}
 		else
 		{
-			setUnlocalizedName("forge");
-			setCreativeTab(CreativeTabs.tabDecorations);
+			Utilities.setBlockName(this, "forge");
+			setCreativeTab(CreativeTabs.DECORATIONS);
 		}
 	}
 	
@@ -75,10 +76,10 @@ public class BlockForge extends BlockFurnace
         return true;
     }
 
-    public static void changeBlockState(boolean parLit, World parWorld, BlockPos parBlockPos)
+    public static void changeBlockStateContainer(boolean parLit, World parWorld, BlockPos parBlockPos)
     {
     	TileEntity tileentity = parWorld.getTileEntity(parBlockPos);
-        parWorld.setBlockState(parBlockPos, BlockSmith.blockForge.getDefaultState().withProperty(FORGE_LIT, parLit));
+        parWorld.setBlockStateContainer(parBlockPos, BlockSmith.blockForge.getDefaultState().withProperty(FORGE_LIT, parLit));
 
         if (tileentity != null)
         {
@@ -105,7 +106,7 @@ public class BlockForge extends BlockFurnace
     @Override
 	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
     {
-        worldIn.setBlockState(pos, state.withProperty(FACING, placer.getHorizontalFacing().getOpposite()), 2);
+        worldIn.setBlockStateContainer(pos, state.withProperty(FACING, placer.getHorizontalFacing().getOpposite()), 2);
 
         if (stack.hasDisplayName())
         {
@@ -160,7 +161,7 @@ public class BlockForge extends BlockFurnace
     }
 
     /**
-     * Possibly modify the given BlockState before rendering it on an Entity (Minecarts, Endermen, ...)
+     * Possibly modify the given BlockStateContainer before rendering it on an Entity (Minecarts, Endermen, ...)
      */
     @Override
 	@SideOnly(Side.CLIENT)
@@ -170,7 +171,7 @@ public class BlockForge extends BlockFurnace
     }
 
     /**
-     * Convert the given metadata into a BlockState for this Block
+     * Convert the given metadata into a BlockStateContainer for this Block
      */
     @Override
 	public IBlockState getStateFromMeta(int meta)
@@ -200,13 +201,13 @@ public class BlockForge extends BlockFurnace
     }
 
     /**
-     * Convert the BlockState into the correct metadata value
+     * Convert the BlockStateContainer into the correct metadata value
      */
     @Override
 	public int getMetaFromState(IBlockState state)
     {
-    	int resultMeta = ((EnumFacing)state.getValue(FACING)).getIndex();
-    	if ((Boolean)state.getValue(FORGE_LIT))
+    	int resultMeta = state.getValue(FACING).getIndex();
+    	if (state.getValue(FORGE_LIT))
     	{
     		resultMeta = resultMeta | 8;
     	}
@@ -214,20 +215,20 @@ public class BlockForge extends BlockFurnace
     }
 
     @Override
-	protected BlockState createBlockState()
+	protected BlockStateContainer createBlockStateContainer()
     {
-        return new BlockState(this, new IProperty[] {FACING, FORGE_LIT});
+        return new BlockStateContainer(this, new IProperty[] {FACING, FORGE_LIT});
     }
 
     @Override
 	@SideOnly(Side.CLIENT)
     public void randomDisplayTick(World parWorld, BlockPos parBlockPos, IBlockState parIBlockState, Random rand)
     {
-        if ((Boolean)parIBlockState.getValue(FORGE_LIT))
+        if (parIBlockState.getValue(FORGE_LIT))
         {
         	// DEBUG
         	System.out.println("randomDisplayTick with forge lit = true");
-            EnumFacing enumfacing = (EnumFacing)parIBlockState.getValue(FACING);
+            EnumFacing enumfacing = parIBlockState.getValue(FACING);
             double d0 = parBlockPos.getX() + 0.5D;
             double d1 = parBlockPos.getY() + rand.nextDouble() * 6.0D / 16.0D;
             double d2 = parBlockPos.getZ() + 0.5D;

@@ -23,8 +23,10 @@ import com.blogspot.jabelarminecraft.blocksmith.entities.IEntity;
 import com.blogspot.jabelarminecraft.blocksmith.networking.MessageSyncEntityToClient;
 import com.blogspot.jabelarminecraft.blocksmith.networking.MessageSyncEntityToServer;
 
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.Item;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
@@ -38,7 +40,23 @@ import net.minecraftforge.fml.client.FMLClientHandler;
  *
  */
 public class Utilities 
-{
+{ 
+    // Need to call this on item instance prior to registering the item
+    // chainable
+    public static Item setItemName(Item parItem, String parItemName) {
+        parItem.setRegistryName(parItemName);
+        parItem.setUnlocalizedName(parItemName);
+        return parItem;
+       } 
+    
+    // Need to call this on block instance prior to registering the block
+    // chainable
+    public static Block setBlockName(Block parBlock, String parBlockName) {
+        parBlock.setRegistryName(parBlockName);
+        parBlock.setUnlocalizedName(parBlockName);
+        return parBlock;
+       }   
+
 	/*
 	 * Text Utilities
 	 */

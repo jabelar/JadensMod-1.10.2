@@ -19,9 +19,9 @@
 
 package com.blogspot.jabelarminecraft.blocksmith;
 
-import com.blogspot.jabelarminecraft.blocksmith.gui.GuiConfig;
 import com.blogspot.jabelarminecraft.blocksmith.items.IExtendedReach;
 import com.blogspot.jabelarminecraft.blocksmith.networking.MessageExtendedReachAttack;
+import com.blogspot.jabelarminecraft.blocksmith.networking.MessageRequestItemStackRegistryFromClient;
 import com.blogspot.jabelarminecraft.blocksmith.utilities.Utilities;
 
 import net.minecraft.client.Minecraft;
@@ -32,16 +32,26 @@ import net.minecraft.entity.passive.EntityMooshroom;
 import net.minecraft.entity.passive.EntityPig;
 import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.event.ClickEvent;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.NameFormat;
-import net.minecraftforge.fml.client.GuiIngameModOptions;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedOutEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -178,39 +188,39 @@ public class EventHandler
     @SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
     public void onEvent(LivingDropsEvent event)
     {
-		for (EntityItem dropItem: event.drops)
+		for (EntityItem dropItem: event.getDrops())
 		{
-			if (dropItem.getEntityItem().getItem() == Items.leather)
+			if (dropItem.getEntityItem().getItem() == Items.LEATHER)
 			{
 				int stackSize = dropItem.getEntityItem().stackSize;
 
-				if (event.entityLiving instanceof EntityCow)
+				if (event.getEntityLiving() instanceof EntityCow)
 				{
 					dropItem.setEntityItemStack(new ItemStack(BlockSmith.cowHide, stackSize));
 				}
-				if (event.entityLiving instanceof EntityHorse)
+				if (event.getEntityLiving() instanceof EntityHorse)
 				{
 					dropItem.setEntityItemStack(new ItemStack(BlockSmith.horseHide, stackSize));
 				}
-				if (event.entityLiving instanceof EntityMooshroom)
+				if (event.getEntityLiving() instanceof EntityMooshroom)
 				{
 					dropItem.setEntityItemStack(new ItemStack(BlockSmith.cowHide, stackSize));
 				}
 			}
     	}
     	
-		if (event.entityLiving instanceof EntityPig)
+		if (event.getEntityLiving() instanceof EntityPig)
 		{
-			event.drops.add(new EntityItem(
-					event.entityLiving.worldObj, 
-					event.entityLiving.posX, event.entityLiving.posY, event.entityLiving.posZ, 
+			event.getDrops().add(new EntityItem(
+			        event.getEntityLiving().worldObj, 
+			        event.getEntityLiving().posX, event.getEntityLiving().posY, event.getEntityLiving().posZ, 
 					new ItemStack(BlockSmith.pigSkin)));
 		}
-		else if (event.entityLiving instanceof EntitySheep)
+		else if (event.getEntityLiving() instanceof EntitySheep)
 		{
-			event.drops.add(new EntityItem(
-					event.entityLiving.worldObj, 
-					event.entityLiving.posX, event.entityLiving.posY, event.entityLiving.posZ, 
+			event.getDrops().add(new EntityItem(
+			        event.getEntityLiving().worldObj, 
+			        event.getEntityLiving().posX, event.getEntityLiving().posY, event.getEntityLiving().posZ, 
 					new ItemStack(BlockSmith.sheepSkin)));
 		}
     }
@@ -289,22 +299,22 @@ public class EventHandler
     public void onEvent(NameFormat event)
     {
     	// DEBUG
-    	System.out.println("NameFormat event for username = "+event.username);
-        if (event.username.equalsIgnoreCase("jnaejnae"))
+    	System.out.println("NameFormat event for username = "+event.getUsername());
+        if (event.getUsername().equalsIgnoreCase("jnaejnae"))
         {
-            event.displayname = event.username+" the Great and Powerful";
+            event.setDisplayname(event.getUsername()+" the Great and Powerful");
         }        
-        else if (event.username.equalsIgnoreCase("MistMaestro"))
+        else if (event.getUsername().equalsIgnoreCase("MistMaestro"))
         {
-            event.displayname = event.username+" the Wise";
+            event.setDisplayname(event.getUsername()+" the Wise");
         }    
-        else if (event.username.equalsIgnoreCase("Taliaailat"))
+        else if (event.getUsername().equalsIgnoreCase("Taliaailat"))
         {
-            event.displayname = event.username+" the Beautiful";
+            event.setDisplayname(event.getUsername()+" the Beautiful");
         }    
         else
         {
-            event.displayname = event.username+" the Ugly";            
+            event.setDisplayname(event.getUsername()+" the Ugly");            
         }
     }
     
@@ -596,11 +606,11 @@ public class EventHandler
     @SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
     public void onEvent(GuiOpenEvent event)
     {
-        if (event.gui instanceof GuiIngameModOptions)
-        {
-            System.out.println("GuiOpenEvent for GuiIngameModOptions");
-            event.gui = new GuiConfig(null);        
-        }
+//        if (event.getGui() instanceof GuiIngameMenu)
+//        {
+//            System.out.println("GuiOpenEvent for GuiIngameModOptions");
+//            event.setGui(new GuiConfig(null));        
+//        }
     }
 
 //    @SideOnly(Side.CLIENT)
@@ -634,7 +644,7 @@ public class EventHandler
             EntityPlayer thePlayer = mc.thePlayer;
             if (thePlayer != null)
             {
-                ItemStack itemstack = thePlayer.getCurrentEquippedItem();
+                ItemStack itemstack = thePlayer.getHeldItemMainhand();
                 IExtendedReach ieri;
                 if (itemstack != null)
                 {
@@ -869,5 +879,218 @@ public class EventHandler
 //	{
 //		
 //	}
+    /*
+     * Common events
+     */
+
+    // events in the cpw.mods.fml.common.event package are actually handled with
+    // @EventHandler annotation in the main mod class or the proxies.
+    
+    /*
+     * Game input events
+     */
+
+//    @SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+//    public void onEvent(InputEvent event)
+//    {
+//        
+//    }
+//
+//    @SideOnly(Side.CLIENT)
+//    @SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+//    public void onEvent(KeyInputEvent event)
+//    {
+//
+//    }
+//
+//    @SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+//    public void onEvent(MouseInputEvent event)
+//    {
+//
+//    }
+//    
+//    /*
+//     * Player events
+//     */
+//
+//    @SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+//    public void onEvent(PlayerEvent event)
+//    {
+//        
+//    }
+//
+//    @SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+//    public void onEvent(ItemCraftedEvent event)
+//    {
+//        
+//    }
+//
+//    @SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+//    public void onEvent(ItemPickupEvent event)
+//    {
+//        
+//    }
+//
+//    @SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+//    public void onEvent(ItemSmeltedEvent event)
+//    {
+//        
+//    }
+//
+//    @SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+//    public void onEvent(PlayerChangedDimensionEvent event)
+//    {
+//        
+//    }
+//
+//    @SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+//    public void onEvent(PlayerLoggedInEvent event)
+//    {
+//        
+//    }
+
+    @SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+    public void onEvent(PlayerLoggedOutEvent event)
+    {
+        // DEBUG
+        System.out.println("Player logged out");
+        
+    }
+
+//    @SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+//    public void onEvent(PlayerRespawnEvent event)
+//    {
+//        // DEBUG
+//        System.out.println("The memories of past existences are but glints of light.");
+//        
+//    }
+//
+//    /*
+//     * Tick events
+//     */
+//
+//    @SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+//    public void onEvent(ClientTickEvent event) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException
+//    {
+//        if (event.phase == TickEvent.Phase.END) // only proceed if START phase otherwise, will execute twice per tick
+//        {
+//            return;
+//        }    
+//
+//    }
+
+    boolean haveRequestedItemStackRegistry = false;
+    boolean haveGivenGift = false;
+            
+    @SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+    public void onEvent(PlayerTickEvent event)
+    {        
+        if (event.phase == TickEvent.Phase.START && event.player.worldObj.isRemote) // only proceed if START phase otherwise, will execute twice per tick
+        {
+            EntityPlayer thePlayer = event.player;
+            if (!BlockSmith.haveWarnedVersionOutOfDate && !BlockSmith.versionChecker.isLatestVersion())
+            {
+                ClickEvent versionCheckChatClickEvent = new ClickEvent(ClickEvent.Action.OPEN_URL, "http://jabelarminecraft.blogspot.com");
+                Style clickableStyle = new Style().setClickEvent(versionCheckChatClickEvent);
+                TextComponentString versionWarningChatComponent = new TextComponentString("Your Magic Beans Mod is not latest version!  Click here to update.");
+                versionWarningChatComponent.setStyle(clickableStyle);
+                thePlayer.addChatMessage(versionWarningChatComponent);
+                BlockSmith.haveWarnedVersionOutOfDate = true;
+            }
+        }
+        else if (event.phase == TickEvent.Phase.START && !event.player.worldObj.isRemote)
+        {
+            if (!haveRequestedItemStackRegistry)
+            {
+                BlockSmith.network.sendToAll(new MessageRequestItemStackRegistryFromClient());
+                haveRequestedItemStackRegistry = true;
+            }
+
+            int registrySize = BlockSmith.proxy.getItemStackRegistry().size();
+            if (!haveGivenGift && registrySize > 1)
+            {
+                ItemStack theGiftItemStack = (ItemStack) BlockSmith.proxy.getItemStackRegistry().get(
+                        event.player.getRNG().nextInt(registrySize));
+                // DEBUG
+                System.out.println("Giving a gift = "+theGiftItemStack.toString());
+                event.player.inventory.addItemStackToInventory(theGiftItemStack);
+                haveGivenGift = true;
+            }
+            
+            if (event.player.getHeldItemMainhand() != null)
+            {
+                if (event.player.getHeldItemMainhand().getItem() == ItemBlock.getItemFromBlock(Blocks.TORCH))
+                {
+                    int blockX = MathHelper.floor_double(event.player.posX);
+                    int blockY = MathHelper.floor_double(event.player.posY-0.2D - event.player.getYOffset());
+                    int blockZ = MathHelper.floor_double(event.player.posZ);
+                    // place light at head level
+                    BlockPos blockLocation = new BlockPos(blockX, blockY, blockZ).up();
+                    if (event.player.worldObj.getBlockState(blockLocation).getBlock() == Blocks.AIR)
+                    {
+                        event.player.worldObj.setBlockState(blockLocation, BlockSmith.blockMovingLightSource.getDefaultState());
+                    }
+                    else 
+                        if (event.player.worldObj.getBlockState(blockLocation.add(event.player.getLookVec().xCoord, event.player.getLookVec().yCoord, event.player.getLookVec().zCoord)).getBlock() == Blocks.AIR)
+                    {
+                        event.player.worldObj.setBlockState(blockLocation.add(event.player.getLookVec().xCoord, event.player.getLookVec().yCoord, event.player.getLookVec().zCoord), BlockSmith.blockMovingLightSource.getDefaultState());
+                    }
+                }
+            }
+        }
+    }
+
+//    @SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+//    public void onEvent(RenderTickEvent event)
+//    {
+//        if (event.phase == TickEvent.Phase.END) // only proceed if START phase otherwise, will execute twice per tick
+//        {
+//            return;
+//        }
+//        
+//    }
+//
+//    @SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+//    public void onEvent(ServerTickEvent event)
+//    {
+//        if (event.phase == TickEvent.Phase.END) // only proceed if START phase otherwise, will execute twice per tick
+//        {
+//            return;
+//        }    
+//        
+//    }
+
+//  @SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+//  public void onEvent(WorldTickEvent event)
+//  {
+//      if (event.phase == TickEvent.Phase.END) // only proceed if START phase otherwise, will execute twice per tick
+//      {
+//          return;
+//      }          
+//  }
+
+    @SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+    public void onEvent(OnConfigChangedEvent eventArgs) 
+    {
+        // DEBUG
+        System.out.println("OnConfigChangedEvent");
+        if(eventArgs.getModID().equals(BlockSmith.MODID))
+        {
+            System.out.println("Syncing config for mod ="+eventArgs.getModID());
+            BlockSmith.config.save();
+            BlockSmith.proxy.syncConfig();
+        }
+    }
+
+//    @SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+//    public void onEvent(PostConfigChangedEvent eventArgs) 
+//    {
+//        // useful for doing something if another mod's config has changed
+//        // if(eventArgs.modID.equals(MagicBeans.MODID))
+//        // {
+//        //        // do whatever here
+//        // }
+//    }
 }
+
 

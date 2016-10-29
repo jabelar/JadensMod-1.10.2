@@ -1,5 +1,5 @@
 /**
-    Copyright (C) 2015 by jabelar
+    Copyright (C) 2016 by jabelar
 
     This file is part of jabelar's Minecraft Forge modding examples; as such,
     you can redistribute it and/or modify it under the terms of the GNU
@@ -14,16 +14,31 @@
     For a copy of the GNU General Public License see <http://www.gnu.org/licenses/>.
 */
 
-package com.blogspot.jabelarminecraft.blocksmith.items;
+package com.blogspot.jabelarminecraft.blocksmith.test;
+
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
+import com.blogspot.jabelarminecraft.blocksmith.blocks.BlockCompactor;
+
+import net.minecraft.util.EnumBlockRenderType;
 
 /**
  * @author jabelar
  *
  */
-public class ItemPigSkin extends ItemHideBase
+public class TestBlockCompactor
 {
-	public ItemPigSkin() 
+
+    /**
+     * Test method for {@link com.blogspot.jabelarminecraft.blocksmith.blocks.BlockCompactor#getRenderType(net.minecraft.block.state.IBlockState)}.
+     */
+    @Test
+    public void testGetRenderTypeIBlockState()
     {
-		super("pigskin");
+        assertEquals("Render block type should be MODEL", EnumBlockRenderType.MODEL, BlockCompactor.getRenderTypeIBlockState() );
     }
+
+ 
 }

@@ -34,6 +34,7 @@ import com.blogspot.jabelarminecraft.blocksmith.items.ItemSheepSkin;
 import com.blogspot.jabelarminecraft.blocksmith.items.ItemSwordExtended;
 import com.blogspot.jabelarminecraft.blocksmith.materials.MaterialTanningRack;
 import com.blogspot.jabelarminecraft.blocksmith.proxy.CommonProxy;
+
 import net.minecraft.item.Item.ToolMaterial;
 import net.minecraft.stats.Achievement;
 import net.minecraft.stats.StatBasic;

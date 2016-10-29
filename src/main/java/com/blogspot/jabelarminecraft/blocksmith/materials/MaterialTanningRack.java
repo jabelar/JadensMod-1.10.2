@@ -16,6 +16,7 @@
 
 package com.blogspot.jabelarminecraft.blocksmith.materials;
 
+import net.minecraft.block.material.EnumPushReaction;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 
@@ -95,8 +96,8 @@ public class MaterialTanningRack extends Material
      * immobility and stop pistons.
      */
     @Override
-	public int getMaterialMobility()
+	public EnumPushReaction getMobilityFlag()
     {
-        return 1;
+        return EnumPushReaction.NORMAL;
     }
 }
