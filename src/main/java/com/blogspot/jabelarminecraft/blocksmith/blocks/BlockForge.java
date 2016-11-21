@@ -21,8 +21,11 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.scoreboard.IScoreCriteria.EnumRenderType;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.EnumBlockRenderType;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -64,7 +67,7 @@ public class BlockForge extends BlockFurnace
     }
 
     @Override
-	public boolean onBlockActivated(World parWorld, BlockPos parBlockPos, IBlockState parIBlockState, EntityPlayer parPlayer, EnumFacing side, float hitX, float hitY, float hitZ)
+	public boolean onBlockActivated(World parWorld, BlockPos parBlockPos, IBlockState parIBlockState, EntityPlayer parPlayer, EnumHand parHand, ItemStack parItemStack, EnumFacing side, float hitX, float hitY, float hitZ)
     {
         if (!parWorld.isRemote)
         {
@@ -79,7 +82,7 @@ public class BlockForge extends BlockFurnace
     public static void changeBlockStateContainer(boolean parLit, World parWorld, BlockPos parBlockPos)
     {
     	TileEntity tileentity = parWorld.getTileEntity(parBlockPos);
-        parWorld.setBlockStateContainer(parBlockPos, BlockSmith.blockForge.getDefaultState().withProperty(FORGE_LIT, parLit));
+        parWorld.setBlockState(parBlockPos, BlockSmith.blockForge.getDefaultState().withProperty(FORGE_LIT, parLit));
 
         if (tileentity != null)
         {
@@ -106,7 +109,7 @@ public class BlockForge extends BlockFurnace
     @Override
 	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
     {
-        worldIn.setBlockStateContainer(pos, state.withProperty(FACING, placer.getHorizontalFacing().getOpposite()), 2);
+        worldIn.setBlockState(pos, state.withProperty(FACING, placer.getHorizontalFacing().getOpposite()), 2);
 
         if (stack.hasDisplayName())
         {
@@ -133,43 +136,34 @@ public class BlockForge extends BlockFurnace
     }
 
     @Override
-	public boolean hasComparatorInputOverride()
+	public boolean hasComparatorInputOverride(IBlockState parBlockState)
     {
         return true;
     }
 
     @Override
-	public int getComparatorInputOverride(World worldIn, BlockPos pos)
+	public int getComparatorInputOverride(IBlockState parBlockState, World worldIn, BlockPos pos)
     {
         return Container.calcRedstone(worldIn.getTileEntity(pos));
     }
 
     @Override
 	@SideOnly(Side.CLIENT)
-    public Item getItem(World worldIn, BlockPos pos)
+    public ItemStack getItem(World worldIn, BlockPos pos, IBlockState parBlockState)
     {
-        return Item.getItemFromBlock(BlockSmith.blockForge);
+        return new ItemStack(Item.getItemFromBlock(BlockSmith.blockForge));
     }
 
     /**
      * The type of render function that is called for this block
      */
     @Override
-	public int getRenderType()
+	public EnumBlockRenderType getRenderType(IBlockState parBlockState)
     {
-        return 3;
+        return EnumBlockRenderType.MODEL;
     }
 
-    /**
-     * Possibly modify the given BlockStateContainer before rendering it on an Entity (Minecarts, Endermen, ...)
-     */
-    @Override
-	@SideOnly(Side.CLIENT)
-    public IBlockState getStateForEntityRender(IBlockState state)
-    {
-        return this.getDefaultState().withProperty(FACING, EnumFacing.SOUTH);
-    }
-
+ 
     /**
      * Convert the given metadata into a BlockStateContainer for this Block
      */
@@ -215,14 +209,14 @@ public class BlockForge extends BlockFurnace
     }
 
     @Override
-	protected BlockStateContainer createBlockStateContainer()
+	protected BlockStateContainer createBlockState()
     {
         return new BlockStateContainer(this, new IProperty[] {FACING, FORGE_LIT});
     }
 
     @Override
 	@SideOnly(Side.CLIENT)
-    public void randomDisplayTick(World parWorld, BlockPos parBlockPos, IBlockState parIBlockState, Random rand)
+    public void randomDisplayTick(IBlockState parIBlockState, World parWorld, BlockPos parBlockPos, Random rand)
     {
         if (parIBlockState.getValue(FORGE_LIT))
         {

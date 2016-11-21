@@ -89,25 +89,25 @@ public class BlockCompactor extends BlockContainer
         if (!parWorld.isRemote)
         {
         	// Rotate block if the front side is blocked
-            Block blockToNorth = parWorld.getBlockState(parBlockPos.north()).getBlock();
-            Block blockToSouth = parWorld.getBlockState(parBlockPos.south()).getBlock();
-            Block blockToWest = parWorld.getBlockState(parBlockPos.west()).getBlock();
-            Block blockToEast = parWorld.getBlockState(parBlockPos.east()).getBlock();
+            IBlockState blockToNorth = parWorld.getBlockState(parBlockPos.north());
+            IBlockState blockToSouth = parWorld.getBlockState(parBlockPos.south());
+            IBlockState blockToWest = parWorld.getBlockState(parBlockPos.west());
+            IBlockState blockToEast = parWorld.getBlockState(parBlockPos.east());
             EnumFacing enumfacing = parIBlockState.getValue(FACING);
 
-            if (enumfacing == EnumFacing.NORTH && blockToNorth.isFullBlock(parIBlockState) && !blockToSouth.isFullBlock(parIBlockState))
+            if (enumfacing == EnumFacing.NORTH && blockToNorth.isFullBlock() && !blockToSouth.isFullBlock())
             {
                 enumfacing = EnumFacing.SOUTH;
             }
-            else if (enumfacing == EnumFacing.SOUTH && blockToSouth.isFullBlock(parIBlockState) && !blockToNorth.isFullBlock(parIBlockState))
+            else if (enumfacing == EnumFacing.SOUTH && blockToSouth.isFullBlock() && !blockToNorth.isFullBlock())
             {
                 enumfacing = EnumFacing.NORTH;
             }
-            else if (enumfacing == EnumFacing.WEST && blockToWest.isFullBlock(parIBlockState) && !blockToEast.isFullBlock(parIBlockState))
+            else if (enumfacing == EnumFacing.WEST && blockToWest.isFullBlock() && !blockToEast.isFullBlock())
             {
                 enumfacing = EnumFacing.EAST;
             }
-            else if (enumfacing == EnumFacing.EAST && blockToEast.isFullBlock(parIBlockState) && !blockToWest.isFullBlock(parIBlockState))
+            else if (enumfacing == EnumFacing.EAST && blockToEast.isFullBlock() && !blockToWest.isFullBlock())
             {
                 enumfacing = EnumFacing.WEST;
             }

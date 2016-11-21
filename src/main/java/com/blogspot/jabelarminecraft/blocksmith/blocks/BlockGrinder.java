@@ -116,7 +116,7 @@ public class BlockGrinder extends BlockContainer
 
     @Override
 	@SideOnly(Side.CLIENT)
-    public void randomDisplayTick(World parWorld, BlockPos parBlockPos, IBlockState parIBlockState, Random parRand)
+    public void randomDisplayTick(IBlockState parIBlockState, World parWorld, BlockPos parBlockPos, Random parRand)
     {
 //        if (isGrinding)
 //        {

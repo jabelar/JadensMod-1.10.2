@@ -38,7 +38,7 @@ import net.minecraft.world.World;
  */
 public class CommandStructureCapture implements ICommand
 {
-	private final List aliases;
+	private final List<String> aliases;
 	
 	World theWorld;
 	Entity thePlayer;
@@ -59,7 +59,7 @@ public class CommandStructureCapture implements ICommand
 
 	public CommandStructureCapture()
 	{
-		    aliases = new ArrayList();
+		    aliases = new ArrayList<String>();
 		    aliases.add("capture");
 		    aliases.add("capt");
 	}
