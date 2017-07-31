@@ -43,6 +43,7 @@ import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityMovingLig
 import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityTanningRack;
 
 import io.netty.buffer.ByteBuf;
+import net.minecraft.advancements.Advancement;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.player.EntityPlayer;
@@ -50,12 +51,10 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.stats.Achievement;
 import net.minecraft.stats.StatBasic;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.biome.Biome;
-import net.minecraftforge.common.AchievementPage;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -90,11 +89,11 @@ public class CommonProxy
         initConfig(event);
 
         // register stuff
-        registerBlocks();
-        registerItems();
+//        registerBlocks();
+//        registerItems();
         registerTileEntities();
-        registerModEntities();
-        registerEntitySpawns();
+//        registerModEntities();
+//        registerEntitySpawns();
         registerFuelHandlers();
         registerSimpleNetworking();
 //        VillagerRegistry.instance().registerVillagerId(10);
@@ -110,8 +109,8 @@ public class CommonProxy
         // register recipes here to allow use of items from other mods
         registerRecipes();
         
-        // register achievements here to allow use of items from other mods
-        registerAchievements();
+        // register Advancements here to allow use of items from other mods
+        registerAdvancements();
         
         // register gui handlers
         registerGuiHandlers();
@@ -191,7 +190,7 @@ public class CommonProxy
      */
     public EntityPlayer getPlayerEntityFromContext(MessageContext ctx) 
     {
-        return ctx.getServerHandler().playerEntity;
+        return ctx.getServerHandler().player;
     }
     
     /**
@@ -239,21 +238,21 @@ public class CommonProxy
     /**
      * Registers blocks
      */
-    public void registerBlocks()
-    {
-        //example: GameRegistry.registerBlock(blockTomato, "tomatoes");
-        GameRegistry.register(BlockSmith.blockTanningRack);
-        GameRegistry.register(BlockSmith.blockGrinder);
-        GameRegistry.register(BlockSmith.blockCompactor);
-        GameRegistry.register(BlockSmith.blockDeconstructor);
-        GameRegistry.register(BlockSmith.blockForge);
-//        GameRegistry.registerBlock(BlockSmith.blockForgeLit, BlockSmith.blockForgeLit.getUnlocalizedName().substring(5));
-        GameRegistry.register(BlockSmith.blockMovingLightSource);
-        
-        // each instance of your block should have a name that is unique within your mod.  use lower case.
-        // you don't need to register an item corresponding to the block, GameRegistry.registerBlock does this automatically.
-        
-    }
+//    public void registerBlocks()
+//    {
+//        //example: GameRegistry.registerBlock(blockTomato, "tomatoes");
+//        GameRegistry.register(BlockSmith.blockTanningRack);
+//        GameRegistry.register(BlockSmith.blockGrinder);
+//        GameRegistry.register(BlockSmith.blockCompactor);
+//        GameRegistry.register(BlockSmith.blockDeconstructor);
+//        GameRegistry.register(BlockSmith.blockForge);
+////        GameRegistry.registerBlock(BlockSmith.blockForgeLit, BlockSmith.blockForgeLit.getUnlocalizedName().substring(5));
+//        GameRegistry.register(BlockSmith.blockMovingLightSource);
+//        
+//        // each instance of your block should have a name that is unique within your mod.  use lower case.
+//        // you don't need to register an item corresponding to the block, GameRegistry.registerBlock does this automatically.
+//        
+//    }
 
     /** 
      * Registers fluids
@@ -269,17 +268,17 @@ public class CommonProxy
     /**
      * Registers items
      */
-    private void registerItems()
-    {
-        // DEBUG
-        System.out.println("Registering items");
-
-        GameRegistry.register(BlockSmith.cowHide);
-        GameRegistry.register(BlockSmith.sheepSkin);
-        GameRegistry.register(BlockSmith.pigSkin);
-        GameRegistry.register(BlockSmith.horseHide);
-        GameRegistry.register(BlockSmith.swordExtended);
-    }
+//    private void registerItems()
+//    {
+//        // DEBUG
+//        System.out.println("Registering items");
+//
+//        GameRegistry.register(BlockSmith.cowHide);
+//        GameRegistry.register(BlockSmith.sheepSkin);
+//        GameRegistry.register(BlockSmith.pigSkin);
+//        GameRegistry.register(BlockSmith.horseHide);
+//        GameRegistry.register(BlockSmith.swordExtended);
+//    }
     
     /**
      * Registers tile entities
@@ -301,63 +300,63 @@ public class CommonProxy
      */
     public void registerRecipes()
     {
-        // DEBUG
-        System.out.println("Registering recipes");
-                       
-        // examples:
-        //        GameRegistry.addRecipe(recipe);
-        //        GameRegistry.addShapedRecipe(output, params);
-        //        GameRegistry.addShapelessRecipe(output, params);
-        //        GameRegistry.addSmelting(input, output, xp);
-        GameRegistry.addShapedRecipe(new ItemStack(Item.getItemFromBlock(BlockSmith.blockGrinder), 1), 
-                new Object[]
-                {
-                    "ABA",
-                    "A A",
-                    "CCC",
-                    'A', Items.STICK, 'B', Blocks.STONE, 'C', Blocks.COBBLESTONE
-                });
-        GameRegistry.addShapedRecipe(new ItemStack(BlockSmith.blockDeconstructor), 
-                new Object[]
-                {
-                    "SSS", 
-                    "SXS", 
-                    "SSS", 
-                    'X', Blocks.CRAFTING_TABLE, 'S', Blocks.COBBLESTONE
-                });
-        GameRegistry.addShapedRecipe(new ItemStack(Items.IRON_HORSE_ARMOR), 
-                new Object[]
-                {
-                    "  S", 
-                    "SXS", 
-                    "SSS", 
-                    'X', Blocks.WOOL, 'S', Items.IRON_INGOT
-                });
-        GameRegistry.addShapedRecipe(new ItemStack(Items.GOLDEN_HORSE_ARMOR), 
-                new Object[]
-                {
-                    "  S", 
-                    "SXS", 
-                    "SSS", 
-                    'X', Blocks.WOOL, 'S', Items.GOLD_INGOT
-                });
-        GameRegistry.addShapedRecipe(new ItemStack(Items.DIAMOND_HORSE_ARMOR), 
-                new Object[]
-                {
-                    "  S", 
-                    "SXS", 
-                    "SSS", 
-                    'X', Blocks.WOOL, 'S', Items.DIAMOND
-                });
-        GameRegistry.addShapedRecipe(new ItemStack(Items.SADDLE), 
-                new Object[]
-                {
-                    "SSS", 
-                    "SXS", 
-                    "X X", 
-                    'X', Items.IRON_INGOT, 'S', Items.LEATHER
-                });
-
+//        // DEBUG
+//        System.out.println("Registering recipes");
+//                       
+//        // examples:
+//        //        GameRegistry.addRecipe(recipe);
+//        //        GameRegistry.addShapedRecipe(output, params);
+//        //        GameRegistry.addShapelessRecipe(output, params);
+//        //        GameRegistry.addSmelting(input, output, xp);
+//        GameRegistry.addShapedRecipe(new ItemStack(Item.getItemFromBlock(BlockSmith.blockGrinder), 1), 
+//                new Object[]
+//                {
+//                    "ABA",
+//                    "A A",
+//                    "CCC",
+//                    'A', Items.STICK, 'B', Blocks.STONE, 'C', Blocks.COBBLESTONE
+//                });
+//        GameRegistry.addShapedRecipe(new ItemStack(BlockSmith.blockDeconstructor), 
+//                new Object[]
+//                {
+//                    "SSS", 
+//                    "SXS", 
+//                    "SSS", 
+//                    'X', Blocks.CRAFTING_TABLE, 'S', Blocks.COBBLESTONE
+//                });
+//        GameRegistry.addShapedRecipe(new ItemStack(Items.IRON_HORSE_ARMOR), 
+//                new Object[]
+//                {
+//                    "  S", 
+//                    "SXS", 
+//                    "SSS", 
+//                    'X', Blocks.WOOL, 'S', Items.IRON_INGOT
+//                });
+//        GameRegistry.addShapedRecipe(new ItemStack(Items.GOLDEN_HORSE_ARMOR), 
+//                new Object[]
+//                {
+//                    "  S", 
+//                    "SXS", 
+//                    "SSS", 
+//                    'X', Blocks.WOOL, 'S', Items.GOLD_INGOT
+//                });
+//        GameRegistry.addShapedRecipe(new ItemStack(Items.DIAMOND_HORSE_ARMOR), 
+//                new Object[]
+//                {
+//                    "  S", 
+//                    "SXS", 
+//                    "SSS", 
+//                    'X', Blocks.WOOL, 'S', Items.DIAMOND
+//                });
+//        GameRegistry.addShapedRecipe(new ItemStack(Items.SADDLE), 
+//                new Object[]
+//                {
+//                    "SSS", 
+//                    "SXS", 
+//                    "X X", 
+//                    'X', Items.IRON_INGOT, 'S', Items.LEATHER
+//                });
+//
     }
 
     /**
@@ -382,7 +381,8 @@ public class CommonProxy
      */
      protected void registerModEntity(Class parEntityClass, String parEntityName)
      {
-            EntityRegistry.registerModEntity(parEntityClass, parEntityName, ++modEntityID, BlockSmith.instance, 80, 3, false);
+ 		final ResourceLocation resourceLocation = new ResourceLocation(BlockSmith.MODID, parEntityName);
+        EntityRegistry.registerModEntity(resourceLocation, parEntityClass, parEntityName, ++modEntityID, BlockSmith.instance, 80, 3, false);
      }
 
      /**
@@ -392,14 +392,16 @@ public class CommonProxy
       */
      protected void registerModEntityFastTracking(Class parEntityClass, String parEntityName)
      {
-            EntityRegistry.registerModEntity(parEntityClass, parEntityName, ++modEntityID, BlockSmith.instance, 80, 10, true);
+  		final ResourceLocation resourceLocation = new ResourceLocation(BlockSmith.MODID, parEntityName);
+        EntityRegistry.registerModEntity(resourceLocation, parEntityClass, parEntityName, ++modEntityID, BlockSmith.instance, 80, 10, true);
      }
 
      public void registerModEntityWithEgg(Class parEntityClass, String parEntityName, 
               int parEggColor, int parEggSpotsColor)
-    {
-         EntityRegistry.registerModEntity(parEntityClass, parEntityName, ++modEntityID, BlockSmith.instance, 80, 3, false, parEggColor, parEggSpotsColor);
-    }
+     {
+   		final ResourceLocation resourceLocation = new ResourceLocation(BlockSmith.MODID, parEntityName);
+        EntityRegistry.registerModEntity(resourceLocation, parEntityClass, parEntityName, ++modEntityID, BlockSmith.instance, 80, 3, false, parEggColor, parEggSpotsColor);
+     }
 
      /**
       * Registers entity natural spawns
@@ -463,28 +465,28 @@ public class CommonProxy
     }
     
     /**
-     * Register achievements
+     * Register Advancements
      */
-    protected void registerAchievements()
+    protected void registerAdvancements()
     {
-        BlockSmith.achievementTanningAHide = new Achievement("achievement.tanningahide", "tanningahide", 0, 0, Items.LEATHER, (Achievement)null);
-        BlockSmith.achievementTanningAHide.registerStat().initIndependentStat(); // Eclipse is having trouble chaining these in previous line
-//      BlockSmith.achievementGiantSlayer = new Achievement("achievement.giantslayer", "giantslayer", 2, 1, (Item)null, BlockSmith.achievementTanningAHide).setSpecial();
-//      BlockSmith.achievementGiantSlayer.registerStat(); // Eclipse is having trouble chaining this in previous line
-        BlockSmith.craftTable = new Achievement("createDecraftTable", "createDecraftTable", 1 - 2 - 2, -1 - 3, BlockSmith.blockDeconstructor, null).registerStat();
-        BlockSmith.deconstructAny = new Achievement("deconstructAnything", "deconstructAnything", 2 - 2, -2 - 2, Items.DIAMOND_HOE, BlockSmith.craftTable).registerStat();
-        BlockSmith.deconstructDiamondHoe = new Achievement("deconstructDiamondHoe", "deconstructDiamondHoe", 2 - 2, 0 - 2, Items.DIAMOND_HOE, BlockSmith.deconstructAny).registerStat();
-        BlockSmith.deconstructJunk = new Achievement("deconstructJunk", "deconstructJunk", 1 - 2, -1 - 2, Items.LEATHER_BOOTS, BlockSmith.deconstructAny).registerStat();
-        BlockSmith.deconstructDiamondShovel = new Achievement("deconstructDiamondShovel", "deconstructDiamondShovel", 3 - 2, -1 - 2, Items.DIAMOND_SHOVEL, BlockSmith.deconstructAny).registerStat();
-        BlockSmith.theHatStandAchievement = new Achievement("porteManteauAchievement", "porteManteauAchievement", 3 - 2, -4 - 2, Blocks.OAK_FENCE, BlockSmith.craftTable).registerStat();
-        AchievementPage.registerAchievementPage(new AchievementPage("BlockSmith",
-                new Achievement[]
-                {
-                BlockSmith.craftTable, BlockSmith.deconstructAny, BlockSmith.deconstructDiamondHoe, BlockSmith.deconstructJunk, BlockSmith.deconstructDiamondShovel, BlockSmith.theHatStandAchievement
-                }));
-
-        BlockSmith.deconstructedItemsStat = (StatBasic) (new StatBasic("stat.deconstructeditems", new TextComponentTranslation("stat.deconstructeditems", new Object[0])).registerStat());
-        
+//        BlockSmith.AdvancementTanningAHide = new Advancement("Advancement.tanningahide", "tanningahide", 0, 0, Items.LEATHER, (Advancement)null);
+//        BlockSmith.AdvancementTanningAHide.registerStat().initIndependentStat(); // Eclipse is having trouble chaining these in previous line
+////      BlockSmith.AdvancementGiantSlayer = new Advancement("Advancement.giantslayer", "giantslayer", 2, 1, (Item)null, BlockSmith.AdvancementTanningAHide).setSpecial();
+////      BlockSmith.AdvancementGiantSlayer.registerStat(); // Eclipse is having trouble chaining this in previous line
+//        BlockSmith.craftTable = new Advancement("createDecraftTable", "createDecraftTable", 1 - 2 - 2, -1 - 3, BlockSmith.blockDeconstructor, null).registerStat();
+//        BlockSmith.deconstructAny = new Advancement("deconstructAnything", "deconstructAnything", 2 - 2, -2 - 2, Items.DIAMOND_HOE, BlockSmith.craftTable).registerStat();
+//        BlockSmith.deconstructDiamondHoe = new Advancement("deconstructDiamondHoe", "deconstructDiamondHoe", 2 - 2, 0 - 2, Items.DIAMOND_HOE, BlockSmith.deconstructAny).registerStat();
+//        BlockSmith.deconstructJunk = new Advancement("deconstructJunk", "deconstructJunk", 1 - 2, -1 - 2, Items.LEATHER_BOOTS, BlockSmith.deconstructAny).registerStat();
+//        BlockSmith.deconstructDiamondShovel = new Advancement("deconstructDiamondShovel", "deconstructDiamondShovel", 3 - 2, -1 - 2, Items.DIAMOND_SHOVEL, BlockSmith.deconstructAny).registerStat();
+//        BlockSmith.theHatStandAdvancement = new Advancement("porteManteauAdvancement", "porteManteauAdvancement", 3 - 2, -4 - 2, Blocks.OAK_FENCE, BlockSmith.craftTable).registerStat();
+//        AdvancementPage.registerAdvancementPage(new AdvancementPage("BlockSmith",
+//                new Advancement[]
+//                {
+//                BlockSmith.craftTable, BlockSmith.deconstructAny, BlockSmith.deconstructDiamondHoe, BlockSmith.deconstructJunk, BlockSmith.deconstructDiamondShovel, BlockSmith.theHatStandAdvancement
+//                }));
+//
+//        BlockSmith.deconstructedItemsStat = (StatBasic) (new StatBasic("stat.deconstructeditems", new TextComponentTranslation("stat.deconstructeditems", new Object[0])).registerStat());
+//        
     }
     
     protected void initItemStackRegistry()

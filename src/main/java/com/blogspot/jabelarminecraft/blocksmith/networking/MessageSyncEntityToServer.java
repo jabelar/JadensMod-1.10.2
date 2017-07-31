@@ -74,13 +74,13 @@ public class MessageSyncEntityToServer implements IMessage
         {
             // Know it will be on the server so make it thread-safe
             final EntityPlayerMP thePlayer = (EntityPlayerMP) BlockSmith.proxy.getPlayerEntityFromContext(ctx);
-            thePlayer.getServerForPlayer().addScheduledTask(
+            thePlayer.getServer().addScheduledTask(
                     new Runnable()
                     {
                         @Override
                         public void run() 
                         {
-                            IEntity theEntity = (IEntity)thePlayer.worldObj.getEntityByID(message.entityId);
+                            IEntity theEntity = (IEntity)thePlayer.world.getEntityByID(message.entityId);
                             theEntity.setSyncDataCompound(message.entitySyncDataCompound);
                             // DEBUG
                             System.out.println("MessageSyncEnitityToClient onMessage(), entity ID = "+message.entityId);

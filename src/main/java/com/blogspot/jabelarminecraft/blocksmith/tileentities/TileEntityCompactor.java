@@ -107,7 +107,7 @@ public class TileEntityCompactor extends TileEntityLockable implements ITickable
         {
             ItemStack itemstack;
 
-            if (compactorItemStackArray[index].stackSize <= count)
+            if (compactorItemStackArray[index].getCount() <= count)
             {
                 itemstack = compactorItemStackArray[index];
                 compactorItemStackArray[index] = null;
@@ -117,7 +117,7 @@ public class TileEntityCompactor extends TileEntityLockable implements ITickable
             {
                 itemstack = compactorItemStackArray[index].splitStack(count);
 
-                if (compactorItemStackArray[index].stackSize == 0)
+                if (compactorItemStackArray[index].getCount() == 0)
                 {
                     compactorItemStackArray[index] = null;
                 }
@@ -162,9 +162,9 @@ public class TileEntityCompactor extends TileEntityLockable implements ITickable
         boolean isSameItemStackAlreadyInSlot = stack != null && stack.isItemEqual(compactorItemStackArray[index]) && ItemStack.areItemStackTagsEqual(stack, compactorItemStackArray[index]);
         compactorItemStackArray[index] = stack;
 
-        if (stack != null && stack.stackSize > getInventoryStackLimit())
+        if (stack != null && stack.getCount() > getInventoryStackLimit())
         {
-            stack.stackSize = getInventoryStackLimit();
+            stack.setCount(getInventoryStackLimit());
         }
 
         // if input slot, reset the compacting timers
@@ -599,5 +599,17 @@ public class TileEntityCompactor extends TileEntityLockable implements ITickable
                 return (T) handlerSide;
         return super.getCapability(capability, facing);
     }
+
+	@Override
+	public boolean isEmpty() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 
 }

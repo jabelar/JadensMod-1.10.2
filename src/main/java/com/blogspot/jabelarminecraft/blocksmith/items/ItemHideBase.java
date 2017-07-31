@@ -17,6 +17,7 @@
 package com.blogspot.jabelarminecraft.blocksmith.items;
 
 import com.blogspot.jabelarminecraft.blocksmith.BlockSmith;
+import com.blogspot.jabelarminecraft.blocksmith.registries.BlockRegistry;
 import com.blogspot.jabelarminecraft.blocksmith.utilities.Utilities;
 
 import net.minecraft.block.Block;
@@ -58,13 +59,13 @@ public class ItemHideBase extends Item
      * Called whenever this item is equipped and the right mouse button is pressed. Args: itemStack, world, entityPlayer
      */
     @Override
-    public ActionResult<ItemStack> onItemRightClick(ItemStack parItemStack, World parWorld, EntityPlayer parPlayer, EnumHand parHand)
+    public ActionResult<ItemStack> onItemRightClick(World parWorld, EntityPlayer parPlayer, EnumHand parHand)
     {
         RayTraceResult movingObjectPosition = rayTrace(parWorld, parPlayer, false);
 
         if (movingObjectPosition == null)
         {
-            return new ActionResult(EnumActionResult.FAIL, parItemStack);
+            return new ActionResult(EnumActionResult.FAIL, parPlayer.getActiveItemStack());
         }
         else
         {
@@ -72,24 +73,24 @@ public class ItemHideBase extends Item
             {
                 BlockPos blockPos = movingObjectPosition.getBlockPos();
 
-                if (!parPlayer.canPlayerEdit(blockPos.offset(movingObjectPosition.sideHit), movingObjectPosition.sideHit, parItemStack))
+                if (!parPlayer.canPlayerEdit(blockPos.offset(movingObjectPosition.sideHit), movingObjectPosition.sideHit, parPlayer.getActiveItemStack()))
                 {
-                    return new ActionResult(EnumActionResult.FAIL, parItemStack);
+                    return new ActionResult(EnumActionResult.FAIL, parPlayer.getActiveItemStack());
                 }
 
                 IBlockState theBlockState = parWorld.getBlockState(blockPos);
                 Block theBlock = theBlockState.getBlock();
-                if (theBlock == BlockSmith.blockTanningRack)
+                if (theBlock == BlockRegistry.TANNING_RACK)
                 {
                     // DEBUG
                     System.out.println("ItemHorseHide onRightClick() interacting with Tanning Rack");
-                    parPlayer.addStat(BlockSmith.achievementTanningAHide);
+//                    parPlayer.addStat(BlockSmith.achievementTanningAHide);
                     parPlayer.addStat(StatList.getObjectUseStats(this));
-                    return new ActionResult(EnumActionResult.SUCCESS, exchangeItemStack(parItemStack, parPlayer, Items.LEATHER));
+                    return new ActionResult(EnumActionResult.SUCCESS, exchangeItemStack(parPlayer.getActiveItemStack(), parPlayer, Items.LEATHER));
                 }
             }
 
-            return new ActionResult(EnumActionResult.FAIL, parItemStack);
+            return new ActionResult(EnumActionResult.FAIL, parPlayer.getActiveItemStack());
         }
     }
 
@@ -100,20 +101,24 @@ public class ItemHideBase extends Item
         {
             return parHeldItemStack;
         }
-        else if (--parHeldItemStack.stackSize <= 0)
+        else 
         {
-            // DEBUG
-            System.out.println("ItemHideBase exchangeItemStack() tanned a hide");
-            return new ItemStack(parNewItem);
-        }
-        else
-        {
-            if (!parPlayer.inventory.addItemStackToInventory(new ItemStack(parNewItem)))
-            {
-                parPlayer.dropItem(new ItemStack(parNewItem, 1, 0), false);
-            }
-
-            return parHeldItemStack;
+        	parHeldItemStack.setCount(parHeldItemStack.getCount()-1);
+        	if (parHeldItemStack.getCount() <= 0)
+	        {
+	            // DEBUG
+	            System.out.println("ItemHideBase exchangeItemStack() tanned a hide");
+	            return new ItemStack(parNewItem);
+	        }
+	        else
+	        {
+	            if (!parPlayer.inventory.addItemStackToInventory(new ItemStack(parNewItem)))
+	            {
+	                parPlayer.dropItem(new ItemStack(parNewItem, 1, 0), false);
+	            }
+	
+	            return parHeldItemStack;
+	        }
         }
     }
 }

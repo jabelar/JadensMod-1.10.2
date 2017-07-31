@@ -63,20 +63,21 @@ public class CommandStructureCapture implements ICommand
 		    aliases.add("capture");
 		    aliases.add("capt");
 	}
+	
 	@Override
-	public String getCommandName() 
+	public String getName() 
 	{
 		return "capture";
 	}
 
 	@Override
-	public String getCommandUsage(ICommandSender var1) 
+	public String getUsage(ICommandSender var1) 
 	{
 		return "capture <int> <int> <int> <int> <int> <int> <text>"; // use "structure <text>"; later when passing name of structure
 	}
 
 	@Override
-	public List getCommandAliases() 
+	public List getAliases() 
 	{
 		return this.aliases;
 	}
@@ -95,7 +96,7 @@ public class CommandStructureCapture implements ICommand
 
 			if(argString.length != 7)
 		    {
-		    	sender.addChatMessage(new TextComponentString("Invalid argument"));
+		    	sender.sendMessage(new TextComponentString("Invalid argument"));
 		    	return;
 		    }
 
@@ -129,11 +130,11 @@ public class CommandStructureCapture implements ICommand
 		    }
 			if(dimX*dimY*dimZ > 64*64*64)
 		    {
-		    	sender.addChatMessage(new TextComponentString("Capture area too big"));
+		    	sender.sendMessage(new TextComponentString("Capture area too big"));
 		    	return;
 		    }
 		    
-		    sender.addChatMessage(new TextComponentString("Capturing Structure from "+startX+", "+startY+", "+
+		    sender.sendMessage(new TextComponentString("Capturing Structure from "+startX+", "+startY+", "+
 		         startZ+" to "+endX+", "+endY+", "+endZ));
 		    blockNameArray = new String[dimX][dimY][dimZ];
 		    blockMetaArray = new int[dimX][dimY][dimZ];
@@ -285,17 +286,7 @@ public class CommandStructureCapture implements ICommand
 		// TODO Auto-generated method stub
 		return false;
 	}
-
-	/* (non-Javadoc)
-	 * @see net.minecraft.command.ICommand#addTabCompletionOptions(net.minecraft.command.ICommandSender, java.lang.String[], net.minecraft.util.BlockPos)
-	 */
-	@Override
-	public List getTabCompletionOptions(MinecraftServer server, ICommandSender sender, String[] args,
-			BlockPos pos) 
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
@@ -305,4 +296,11 @@ public class CommandStructureCapture implements ICommand
         // TODO Auto-generated method stub
         return 0;
     }
+	
+	@Override
+	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args,
+			BlockPos targetPos) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

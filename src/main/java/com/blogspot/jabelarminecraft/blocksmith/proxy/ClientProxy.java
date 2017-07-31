@@ -21,10 +21,10 @@ package com.blogspot.jabelarminecraft.blocksmith.proxy;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelPig;
-import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPig;
-import net.minecraft.client.resources.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -46,6 +46,8 @@ import com.blogspot.jabelarminecraft.blocksmith.BlockSmith;
 import com.blogspot.jabelarminecraft.blocksmith.VersionChecker;
 import com.blogspot.jabelarminecraft.blocksmith.entities.EntityPigTest;
 import com.blogspot.jabelarminecraft.blocksmith.models.MyModelLoader;
+import com.blogspot.jabelarminecraft.blocksmith.registries.BlockRegistry;
+import com.blogspot.jabelarminecraft.blocksmith.registries.ItemRegistry;
 
 public class ClientProxy extends CommonProxy 
 {
@@ -144,7 +146,7 @@ public class ClientProxy extends CommonProxy
       
         RenderManager renderManager = Minecraft.getMinecraft().getRenderManager();
         // RenderingRegistry.registerEntityRenderingHandler(EntityGoldenGoose.class, new RenderGoldenGoose(renderManager, new ModelGoldenGoose(), 0.5F)); // 0.5F is shadow size 
-    	RenderingRegistry.registerEntityRenderingHandler(EntityPigTest.class, new RenderPig(renderManager, new ModelPig(), 0.5F));
+    	RenderingRegistry.registerEntityRenderingHandler(EntityPigTest.class, new RenderPig(renderManager));
     }
     
     public void registerItemRenderers()
@@ -152,11 +154,11 @@ public class ClientProxy extends CommonProxy
         // DEBUG
         System.out.println("Registering item renderers");
         
-        registerItemRenderer(BlockSmith.cowHide);
-        registerItemRenderer(BlockSmith.sheepSkin);
-        registerItemRenderer(BlockSmith.pigSkin);
-        registerItemRenderer(BlockSmith.horseHide);
-        registerItemRenderer(BlockSmith.swordExtended);
+        registerItemRenderer(ItemRegistry.COW_HIDE);
+        registerItemRenderer(ItemRegistry.SHEEP_SKIN);
+        registerItemRenderer(ItemRegistry.PIG_SKIN);
+        registerItemRenderer(ItemRegistry.HORSE_HIDE);
+        registerItemRenderer(ItemRegistry.SWORD_EXTENDED);
         // registerItemRenderer(JnaeMod.magicBeans);
     }
     
@@ -174,13 +176,13 @@ public class ClientProxy extends CommonProxy
         
         RenderItem renderItem = Minecraft.getMinecraft().getRenderItem();
         
-        renderItem.getItemModelMesher().register(Item.getItemFromBlock(BlockSmith.blockTanningRack), 0, new ModelResourceLocation(BlockSmith.MODID + ":" + BlockSmith.blockTanningRack.getUnlocalizedName().substring(5), "inventory"));
-        renderItem.getItemModelMesher().register(Item.getItemFromBlock(BlockSmith.blockGrinder), 0, new ModelResourceLocation(BlockSmith.MODID + ":" + BlockSmith.blockGrinder.getUnlocalizedName().substring(5), "inventory"));
-        renderItem.getItemModelMesher().register(Item.getItemFromBlock(BlockSmith.blockCompactor), 0, new ModelResourceLocation(BlockSmith.MODID + ":" + BlockSmith.blockCompactor.getUnlocalizedName().substring(5), "inventory"));
-        renderItem.getItemModelMesher().register(Item.getItemFromBlock(BlockSmith.blockDeconstructor), 0, new ModelResourceLocation(BlockSmith.MODID + ":" + BlockSmith.blockDeconstructor.getUnlocalizedName().substring(5), "inventory"));
-        renderItem.getItemModelMesher().register(Item.getItemFromBlock(BlockSmith.blockForge), 0, new ModelResourceLocation(BlockSmith.MODID + ":" + BlockSmith.blockForge.getUnlocalizedName().substring(5), "inventory"));
+        renderItem.getItemModelMesher().register(Item.getItemFromBlock(BlockRegistry.TANNING_RACK), 0, new ModelResourceLocation(BlockSmith.MODID + ":" + BlockRegistry.TANNING_RACK.getUnlocalizedName().substring(5), "inventory"));
+        renderItem.getItemModelMesher().register(Item.getItemFromBlock(BlockRegistry.GRINDER), 0, new ModelResourceLocation(BlockSmith.MODID + ":" + BlockRegistry.GRINDER.getUnlocalizedName().substring(5), "inventory"));
+        renderItem.getItemModelMesher().register(Item.getItemFromBlock(BlockRegistry.COMPACTOR), 0, new ModelResourceLocation(BlockSmith.MODID + ":" + BlockRegistry.COMPACTOR.getUnlocalizedName().substring(5), "inventory"));
+        renderItem.getItemModelMesher().register(Item.getItemFromBlock(BlockRegistry.DECONSTRUCTOR), 0, new ModelResourceLocation(BlockSmith.MODID + ":" + BlockRegistry.DECONSTRUCTOR.getUnlocalizedName().substring(5), "inventory"));
+        renderItem.getItemModelMesher().register(Item.getItemFromBlock(BlockRegistry.FORGE), 0, new ModelResourceLocation(BlockSmith.MODID + ":" + BlockRegistry.FORGE.getUnlocalizedName().substring(5), "inventory"));
 //        renderItem.getItemModelMesher().register(Item.getItemFromBlock(BlockSmith.blockForgeLit), 0, new ModelResourceLocation(BlockSmith.MODID + ":" + BlockSmith.blockForgeLit.getUnlocalizedName().substring(5), "inventory"));
-        renderItem.getItemModelMesher().register(Item.getItemFromBlock(BlockSmith.blockMovingLightSource), 0, new ModelResourceLocation("torch"));
+        renderItem.getItemModelMesher().register(Item.getItemFromBlock(BlockRegistry.MOVING_LIGHT_SOURCE), 0, new ModelResourceLocation("torch"));
     }
     
     /*     
@@ -197,7 +199,7 @@ public class ClientProxy extends CommonProxy
         // player even when you are on the server! Sounds absurd, but it's true.
 
         // Solution is to double-check side before returning the player:
-        return (ctx.side.isClient() ? Minecraft.getMinecraft().thePlayer : super.getPlayerEntityFromContext(ctx));
+        return (ctx.side.isClient() ? Minecraft.getMinecraft().player : super.getPlayerEntityFromContext(ctx));
     }
     
     /*
@@ -246,19 +248,19 @@ public class ClientProxy extends CommonProxy
      * ItemStack types (all valid metadata values, as well as any NBT that is used to create variants
      * in mods like Tinker's Construct).
      */
-    @Override
-	protected void initItemStackRegistry()
-    {
-		itemStackRegistry.clear();
-		
-		for (Object theObj: Item.itemRegistry)
-		{
-			((Item)theObj).getSubItems((Item)theObj, null, itemStackRegistry); // this method directly appends to ItemStackRegistry
-		}
-		
-		// DEBUG
-		System.out.println("ItemStack registry = "+itemStackRegistry.toString());
-
-		return;
-    }
+//    @Override
+//	protected void initItemStackRegistry()
+//    {
+//		itemStackRegistry.clear();
+//		
+//		for (Object theObj: Item.REGISTRY)
+//		{
+//			((Item)theObj).getSubItems((Item)theObj, null, itemStackRegistry); // this method directly appends to ItemStackRegistry
+//		}
+//		
+//		// DEBUG
+//		System.out.println("ItemStack registry = "+itemStackRegistry.toString());
+//
+//		return;
+//    }
 }

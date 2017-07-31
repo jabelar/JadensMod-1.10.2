@@ -16,14 +16,14 @@
 
 package com.blogspot.jabelarminecraft.blocksmith.particles;
 
-import net.minecraft.client.particle.EntityAuraFX;
+import net.minecraft.client.particle.Particle;
 import net.minecraft.world.World;
 
 /**
  * @author jabelar
  *
  */
-public class EntityParticleFXMysterious extends EntityAuraFX
+public class EntityParticleFXMysterious extends Particle
 {
 
 	/**

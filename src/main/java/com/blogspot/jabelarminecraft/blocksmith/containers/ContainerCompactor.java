@@ -19,10 +19,11 @@ package com.blogspot.jabelarminecraft.blocksmith.containers;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ICrafting;
+import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -74,10 +75,11 @@ public class ContainerCompactor extends Container
      * Add the given Listener to the list of Listeners. Method name is for legacy.
      */
     @Override
-	public void onCraftGuiOpened(ICrafting listener)
+
+    public void addListener(IContainerListener listener)
     {
-        super.onCraftGuiOpened(listener);
-        listener.func_175173_a(this, tileCompactor);
+        super.addListener(listener);
+        listener.sendAllWindowProperties(this, this.tileCompactor);
     }
 
     /**
@@ -88,23 +90,23 @@ public class ContainerCompactor extends Container
     {
         super.detectAndSendChanges();
 
-        for (int i = 0; i < crafters.size(); ++i)
+        for (int i = 0; i < this.listeners.size(); ++i)
         {
-            ICrafting icrafting = (ICrafting)crafters.get(i);
+            IContainerListener iContainerListener = this.listeners.get(i);
 
             if (ticksCompactingItemSoFar != tileCompactor.getField(2))
             {
-                icrafting.sendProgressBarUpdate(this, 2, tileCompactor.getField(2));
+                iContainerListener.sendWindowProperty(this, 2, this.tileCompactor.getField(2));
             }
 
             if (timeCanCompact != tileCompactor.getField(0))
             {
-                icrafting.sendProgressBarUpdate(this, 0, tileCompactor.getField(0));
+                iContainerListener.sendWindowProperty(this, 2, this.tileCompactor.getField(0));
             }
 
             if (ticksPerItem != tileCompactor.getField(3))
             {
-                icrafting.sendProgressBarUpdate(this, 3, tileCompactor.getField(3));
+                iContainerListener.sendWindowProperty(this, 2, this.tileCompactor.getField(3));
             }
         }
 
@@ -123,7 +125,7 @@ public class ContainerCompactor extends Container
     @Override
 	public boolean canInteractWith(EntityPlayer playerIn)
     {
-        return tileCompactor.isUseableByPlayer(playerIn);
+        return tileCompactor.isUsableByPlayer(playerIn);
     }
 
     /**
@@ -176,7 +178,7 @@ public class ContainerCompactor extends Container
                 return null;
             }
 
-            if (itemStack2.stackSize == 0)
+            if (itemStack2.getCount() == 0)
             {
                 slot.putStack((ItemStack)null);
             }
@@ -185,12 +187,12 @@ public class ContainerCompactor extends Container
                 slot.onSlotChanged();
             }
 
-            if (itemStack2.stackSize == itemStack1.stackSize)
+            if (itemStack2.getCount() == itemStack1.getCount())
             {
                 return null;
             }
 
-            slot.onPickupFromSlot(playerIn, itemStack2);
+            slot.onTake(playerIn, itemStack2);
         }
 
         return itemStack1;

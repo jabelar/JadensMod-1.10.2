@@ -2,7 +2,7 @@ package com.blogspot.jabelarminecraft.blocksmith;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldSavedData;
+import net.minecraft.world.storage.WorldSavedData;
 
 public class WorldData extends WorldSavedData 
 {
@@ -34,10 +34,11 @@ public class WorldData extends WorldSavedData
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbt) 
+	public NBTTagCompound writeToNBT(NBTTagCompound nbt) 
 	{
 		// DEBUG
 		System.out.println("MagicBeansWorldData writeToNBT");
+		return nbt;
 		
 //		nbt.setBoolean("hasCastleSpawned", hasCastleSpawned);
 //		nbt.setBoolean("familyCowHasGivenLead", familyCowHasGivenLead);
@@ -79,14 +80,14 @@ public class WorldData extends WorldSavedData
 		
 	public static WorldData get(World world) 
 	{
-		WorldData data = (WorldData)world.loadItemData(WorldData.class, IDENTIFIER);
+		WorldData data = (WorldData)world.loadData(WorldData.class, IDENTIFIER);
 		if (data == null) 
 		{
 			// DEBUG
 			System.out.println("WorldData didn't exist so creating it");
 			
 			data = new WorldData();
-			world.setItemData(IDENTIFIER, data);
+			world.setData(IDENTIFIER, data);
 		}
 		return data;
 	}

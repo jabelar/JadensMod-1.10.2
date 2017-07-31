@@ -6,6 +6,7 @@ package com.blogspot.jabelarminecraft.blocksmith.blocks;
 import java.util.Random;
 
 import com.blogspot.jabelarminecraft.blocksmith.BlockSmith;
+import com.blogspot.jabelarminecraft.blocksmith.registries.BlockRegistry;
 import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityForge;
 import com.blogspot.jabelarminecraft.blocksmith.utilities.Utilities;
 
@@ -55,19 +56,18 @@ public class BlockForge extends BlockFurnace
 		}
 	}
 	
-    /**
-     * Get the Item that this Block should drop when harvested.
-     *  
-     * @param fortune the level of the Fortune enchantment on the player's tool
-     */
     @Override
-	public Item getItemDropped(IBlockState parIBlockState, Random rand, int fortune)
-    {
-        return Item.getItemFromBlock(BlockSmith.blockForge);
-    }
-
-    @Override
-	public boolean onBlockActivated(World parWorld, BlockPos parBlockPos, IBlockState parIBlockState, EntityPlayer parPlayer, EnumHand parHand, ItemStack parItemStack, EnumFacing side, float hitX, float hitY, float hitZ)
+	public boolean onBlockActivated(
+			World parWorld, 
+			BlockPos parBlockPos, 
+			IBlockState parIBlockState, 
+			EntityPlayer parPlayer, 
+			EnumHand parHand, 
+			EnumFacing side, 
+			float hitX, 
+			float hitY, 
+			float hitZ
+			)
     {
         if (!parWorld.isRemote)
         {
@@ -82,7 +82,7 @@ public class BlockForge extends BlockFurnace
     public static void changeBlockStateContainer(boolean parLit, World parWorld, BlockPos parBlockPos)
     {
     	TileEntity tileentity = parWorld.getTileEntity(parBlockPos);
-        parWorld.setBlockState(parBlockPos, BlockSmith.blockForge.getDefaultState().withProperty(FORGE_LIT, parLit));
+        parWorld.setBlockState(parBlockPos, BlockRegistry.FORGE.getDefaultState().withProperty(FORGE_LIT, parLit));
 
         if (tileentity != null)
         {
@@ -100,10 +100,49 @@ public class BlockForge extends BlockFurnace
         return new TileEntityForge();
     }
 
-    @Override
-	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
+//    @Override
+//	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
+//    {
+//        return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
+//    }
+    
+    /**
+     * Called after the block is set in the Chunk data, but before the Tile Entity is set
+     */
+    public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state)
     {
-        return this.getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
+        this.setDefaultFacing(worldIn, pos, state);
+    }
+
+    private void setDefaultFacing(World worldIn, BlockPos pos, IBlockState state)
+    {
+        if (!worldIn.isRemote)
+        {
+            IBlockState iblockstate = worldIn.getBlockState(pos.north());
+            IBlockState iblockstate1 = worldIn.getBlockState(pos.south());
+            IBlockState iblockstate2 = worldIn.getBlockState(pos.west());
+            IBlockState iblockstate3 = worldIn.getBlockState(pos.east());
+            EnumFacing enumfacing = (EnumFacing)state.getValue(FACING);
+
+            if (enumfacing == EnumFacing.NORTH && iblockstate.isFullBlock() && !iblockstate1.isFullBlock())
+            {
+                enumfacing = EnumFacing.SOUTH;
+            }
+            else if (enumfacing == EnumFacing.SOUTH && iblockstate1.isFullBlock() && !iblockstate.isFullBlock())
+            {
+                enumfacing = EnumFacing.NORTH;
+            }
+            else if (enumfacing == EnumFacing.WEST && iblockstate2.isFullBlock() && !iblockstate3.isFullBlock())
+            {
+                enumfacing = EnumFacing.EAST;
+            }
+            else if (enumfacing == EnumFacing.EAST && iblockstate3.isFullBlock() && !iblockstate2.isFullBlock())
+            {
+                enumfacing = EnumFacing.WEST;
+            }
+
+            worldIn.setBlockState(pos, state.withProperty(FACING, enumfacing), 2);
+        }
     }
 
     @Override
@@ -145,13 +184,6 @@ public class BlockForge extends BlockFurnace
 	public int getComparatorInputOverride(IBlockState parBlockState, World worldIn, BlockPos pos)
     {
         return Container.calcRedstone(worldIn.getTileEntity(pos));
-    }
-
-    @Override
-	@SideOnly(Side.CLIENT)
-    public ItemStack getItem(World worldIn, BlockPos pos, IBlockState parBlockState)
-    {
-        return new ItemStack(Item.getItemFromBlock(BlockSmith.blockForge));
     }
 
     /**

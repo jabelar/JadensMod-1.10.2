@@ -72,7 +72,7 @@ public class MessageToServer implements IMessage
             System.out.println(String.format("Received %s from %s", message.text, BlockSmith.proxy.getPlayerEntityFromContext(ctx).getDisplayName()));
             // Know it will be on the server so make it thread-safe
             final EntityPlayerMP thePlayer = (EntityPlayerMP) BlockSmith.proxy.getPlayerEntityFromContext(ctx);
-            thePlayer.getServerForPlayer().addScheduledTask(
+            thePlayer.getServer().addScheduledTask(
                     new Runnable()
                     {
                         @Override

@@ -53,7 +53,7 @@ public class EntityPigTest extends EntityPig
             if (!net.minecraftforge.common.ForgeHooks.onLivingAttack(this, parDamageSource, parDamageAmount)) return false;
             // DEBUG
             System.out.println("ForgeHooks.onLivingAttack returned true");
-            if (this.worldObj.isRemote)
+            if (this.world.isRemote)
             {
             	// DEBUG
             	System.out.println("Don't process attack on client");
@@ -61,7 +61,7 @@ public class EntityPigTest extends EntityPig
             }
             else
             {
-                this.entityAge = 0;
+                this.setGrowingAge(0);
 
                 if (this.getHealth() <= 0.0F)
                 {
@@ -77,7 +77,7 @@ public class EntityPigTest extends EntityPig
                 }
                 else
                 {
-                    if ((parDamageSource == DamageSource.anvil || parDamageSource == DamageSource.fallingBlock) && this.getItemStackFromSlot(EntityEquipmentSlot.HEAD) != null)
+                    if ((parDamageSource == DamageSource.ANVIL || parDamageSource == DamageSource.FALLING_BLOCK) && this.getItemStackFromSlot(EntityEquipmentSlot.HEAD) != null)
                     {
                     	// DEBUG
                     	System.out.println("Attacked by falling block without a helmet");
@@ -112,7 +112,7 @@ public class EntityPigTest extends EntityPig
                     }
 
                     this.attackedAtYaw = 0.0F;
-                    Entity entity = parDamageSource.getEntity();
+                    Entity entity = parDamageSource.getImmediateSource();
 
                     if (entity != null)
                     {
@@ -142,9 +142,9 @@ public class EntityPigTest extends EntityPig
 
                     if (flag)
                     {
-                        this.worldObj.setEntityState(this, (byte)2);
+                        this.world.setEntityState(this, (byte)2);
 
-                        if (parDamageSource != DamageSource.drown)
+                        if (parDamageSource != DamageSource.DROWN)
                         {
                         	// DEBUG
                         	System.out.println("Not drowning");
@@ -189,7 +189,7 @@ public class EntityPigTest extends EntityPig
                     }
                     else
                     {
-                        s = this.getHurtSound();
+                        s = this.getHurtSound(parDamageSource);
 
                         if (flag && s != null)
                         {

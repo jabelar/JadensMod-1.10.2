@@ -22,6 +22,8 @@ package com.blogspot.jabelarminecraft.blocksmith;
 import com.blogspot.jabelarminecraft.blocksmith.items.IExtendedReach;
 import com.blogspot.jabelarminecraft.blocksmith.networking.MessageExtendedReachAttack;
 import com.blogspot.jabelarminecraft.blocksmith.networking.MessageRequestItemStackRegistryFromClient;
+import com.blogspot.jabelarminecraft.blocksmith.registries.BlockRegistry;
+import com.blogspot.jabelarminecraft.blocksmith.registries.ItemRegistry;
 import com.blogspot.jabelarminecraft.blocksmith.utilities.Utilities;
 
 import net.minecraft.client.Minecraft;
@@ -44,6 +46,7 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.event.ClickEvent;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.MouseEvent;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent.NameFormat;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEvent;
@@ -57,6 +60,16 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EventHandler 
 {
+	/*
+	 * Registry events
+	 */
+	
+  @SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
+  public void onEvent(RegistryEvent.NewRegistry event)
+  {
+	  // can create registries here if needed
+  }
+	
     /*
      * Miscellaneous events
      */    
@@ -190,21 +203,21 @@ public class EventHandler
     {
 		for (EntityItem dropItem: event.getDrops())
 		{
-			if (dropItem.getEntityItem().getItem() == Items.LEATHER)
+			if (dropItem.getItem().getItem() == Items.LEATHER)
 			{
-				int stackSize = dropItem.getEntityItem().stackSize;
+				int stackSize = dropItem.getItem().getCount();
 
 				if (event.getEntityLiving() instanceof EntityCow)
 				{
-					dropItem.setEntityItemStack(new ItemStack(BlockSmith.cowHide, stackSize));
+					dropItem.setItem(new ItemStack(ItemRegistry.COW_HIDE, stackSize));
 				}
 				if (event.getEntityLiving() instanceof EntityHorse)
 				{
-					dropItem.setEntityItemStack(new ItemStack(BlockSmith.horseHide, stackSize));
+					dropItem.setItem(new ItemStack(ItemRegistry.HORSE_HIDE, stackSize));
 				}
 				if (event.getEntityLiving() instanceof EntityMooshroom)
 				{
-					dropItem.setEntityItemStack(new ItemStack(BlockSmith.cowHide, stackSize));
+					dropItem.setItem(new ItemStack(ItemRegistry.COW_HIDE, stackSize));
 				}
 			}
     	}
@@ -212,16 +225,16 @@ public class EventHandler
 		if (event.getEntityLiving() instanceof EntityPig)
 		{
 			event.getDrops().add(new EntityItem(
-			        event.getEntityLiving().worldObj, 
+			        event.getEntityLiving().world, 
 			        event.getEntityLiving().posX, event.getEntityLiving().posY, event.getEntityLiving().posZ, 
-					new ItemStack(BlockSmith.pigSkin)));
+					new ItemStack(ItemRegistry.PIG_SKIN)));
 		}
 		else if (event.getEntityLiving() instanceof EntitySheep)
 		{
 			event.getDrops().add(new EntityItem(
-			        event.getEntityLiving().worldObj, 
+			        event.getEntityLiving().world, 
 			        event.getEntityLiving().posX, event.getEntityLiving().posY, event.getEntityLiving().posZ, 
-					new ItemStack(BlockSmith.sheepSkin)));
+					new ItemStack(ItemRegistry.SHEEP_SKIN)));
 		}
     }
     
@@ -641,7 +654,7 @@ public class EventHandler
         if (event.getButton() == 0 && event.isButtonstate())
         {
             Minecraft mc = Minecraft.getMinecraft();
-            EntityPlayer thePlayer = mc.thePlayer;
+            EntityPlayer thePlayer = mc.player;
             if (thePlayer != null)
             {
                 ItemStack itemstack = thePlayer.getHeldItemMainhand();
@@ -979,13 +992,13 @@ public class EventHandler
 //
 //    }
 
-    boolean haveRequestedItemStackRegistry = false;
-    boolean haveGivenGift = false;
+//    boolean haveRequestedItemStackRegistry = false;
+//    boolean haveGivenGift = false;
             
     @SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=true)
     public void onEvent(PlayerTickEvent event)
     {        
-        if (event.phase == TickEvent.Phase.START && event.player.worldObj.isRemote) // only proceed if START phase otherwise, will execute twice per tick
+        if (event.phase == TickEvent.Phase.START && event.player.world.isRemote) // only proceed if START phase otherwise, will execute twice per tick
         {
             EntityPlayer thePlayer = event.player;
             if (!BlockSmith.haveWarnedVersionOutOfDate && !BlockSmith.versionChecker.isLatestVersion())
@@ -994,46 +1007,51 @@ public class EventHandler
                 Style clickableStyle = new Style().setClickEvent(versionCheckChatClickEvent);
                 TextComponentString versionWarningChatComponent = new TextComponentString("Your Magic Beans Mod is not latest version!  Click here to update.");
                 versionWarningChatComponent.setStyle(clickableStyle);
-                thePlayer.addChatMessage(versionWarningChatComponent);
+                thePlayer.sendMessage(versionWarningChatComponent);
                 BlockSmith.haveWarnedVersionOutOfDate = true;
             }
         }
-        else if (event.phase == TickEvent.Phase.START && !event.player.worldObj.isRemote)
+        else if (event.phase == TickEvent.Phase.START && !event.player.world.isRemote)
         {
-            if (!haveRequestedItemStackRegistry)
-            {
-                BlockSmith.network.sendToAll(new MessageRequestItemStackRegistryFromClient());
-                haveRequestedItemStackRegistry = true;
-            }
-
-            int registrySize = BlockSmith.proxy.getItemStackRegistry().size();
-            if (!haveGivenGift && registrySize > 1)
-            {
-                ItemStack theGiftItemStack = (ItemStack) BlockSmith.proxy.getItemStackRegistry().get(
-                        event.player.getRNG().nextInt(registrySize));
-                // DEBUG
-                System.out.println("Giving a gift = "+theGiftItemStack.toString());
-                event.player.inventory.addItemStackToInventory(theGiftItemStack);
-                haveGivenGift = true;
-            }
+//            if (!haveRequestedItemStackRegistry)
+//            {
+//                BlockSmith.network.sendToAll(new MessageRequestItemStackRegistryFromClient());
+//                haveRequestedItemStackRegistry = true;
+//            }
+//
+//            int registrySize = BlockSmith.proxy.getItemStackRegistry().size();
+//            if (!haveGivenGift && registrySize > 1)
+//            {
+//                ItemStack theGiftItemStack = (ItemStack) BlockSmith.proxy.getItemStackRegistry().get(
+//                        event.player.getRNG().nextInt(registrySize));
+//                // DEBUG
+//                System.out.println("Giving a gift = "+theGiftItemStack.toString());
+//                event.player.inventory.addItemStackToInventory(theGiftItemStack);
+//                haveGivenGift = true;
+//            }
             
             if (event.player.getHeldItemMainhand() != null)
             {
                 if (event.player.getHeldItemMainhand().getItem() == ItemBlock.getItemFromBlock(Blocks.TORCH))
                 {
-                    int blockX = MathHelper.floor_double(event.player.posX);
-                    int blockY = MathHelper.floor_double(event.player.posY-0.2D - event.player.getYOffset());
-                    int blockZ = MathHelper.floor_double(event.player.posZ);
+                    int blockX = MathHelper.floor(event.player.posX);
+                    int blockY = MathHelper.floor(event.player.posY-0.2D - event.player.getYOffset());
+                    int blockZ = MathHelper.floor(event.player.posZ);
                     // place light at head level
                     BlockPos blockLocation = new BlockPos(blockX, blockY, blockZ).up();
-                    if (event.player.worldObj.getBlockState(blockLocation).getBlock() == Blocks.AIR)
+                    if (event.player.world.getBlockState(blockLocation).getBlock() == Blocks.AIR)
                     {
-                        event.player.worldObj.setBlockState(blockLocation, BlockSmith.blockMovingLightSource.getDefaultState());
+                        event.player.world.setBlockState(blockLocation, BlockRegistry.MOVING_LIGHT_SOURCE.getDefaultState());
                     }
                     else 
-                        if (event.player.worldObj.getBlockState(blockLocation.add(event.player.getLookVec().xCoord, event.player.getLookVec().yCoord, event.player.getLookVec().zCoord)).getBlock() == Blocks.AIR)
+                        if (event.player.world.getBlockState(blockLocation.add(event.player.getLookVec().x, event.player.getLookVec().y, event.player.getLookVec().y)).getBlock() == Blocks.AIR)
                     {
-                        event.player.worldObj.setBlockState(blockLocation.add(event.player.getLookVec().xCoord, event.player.getLookVec().yCoord, event.player.getLookVec().zCoord), BlockSmith.blockMovingLightSource.getDefaultState());
+                        event.player.world.setBlockState(blockLocation.add(
+                        		event.player.getLookVec().x, 
+                        		event.player.getLookVec().y, 
+                        		event.player.getLookVec().y), 
+                        		BlockRegistry.MOVING_LIGHT_SOURCE.getDefaultState()
+                        		);
                     }
                 }
             }

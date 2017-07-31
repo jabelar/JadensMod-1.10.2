@@ -63,7 +63,7 @@ public class MessageSendItemStackRegistryToServer implements IMessage
             System.out.println("Message received");
             // Know it will be on the server so make it thread-safe
             final EntityPlayerMP thePlayer = (EntityPlayerMP) BlockSmith.proxy.getPlayerEntityFromContext(ctx);
-            thePlayer.getServerForPlayer().addScheduledTask(
+            thePlayer.getServer().addScheduledTask(
                     new Runnable()
                     {
                         @Override

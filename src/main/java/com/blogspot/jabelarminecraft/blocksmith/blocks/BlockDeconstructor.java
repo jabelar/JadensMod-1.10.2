@@ -51,7 +51,7 @@ public class BlockDeconstructor extends Block
     }
 
     @Override
-	public boolean onBlockActivated(World parWorld, BlockPos parBlockPos, IBlockState parIBlockState, EntityPlayer parPlayer, EnumHand parhand, ItemStack parStack, EnumFacing parSide, float hitX, float hitY, float hitZ)
+	public boolean onBlockActivated(World parWorld, BlockPos parBlockPos, IBlockState parIBlockState, EntityPlayer parPlayer, EnumHand parhand, EnumFacing parSide, float hitX, float hitY, float hitZ)
     {
         if(!parWorld.isRemote)
         {

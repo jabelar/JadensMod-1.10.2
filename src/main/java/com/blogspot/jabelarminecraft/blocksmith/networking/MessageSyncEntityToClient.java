@@ -73,7 +73,7 @@ public class MessageSyncEntityToClient implements IMessage
         public IMessage onMessage(MessageSyncEntityToClient message, MessageContext ctx) 
         {
         	EntityPlayer thePlayer = BlockSmith.proxy.getPlayerEntityFromContext(ctx);
-        	IEntity theEntity = (IEntity)thePlayer.worldObj.getEntityByID(message.entityId);
+        	IEntity theEntity = (IEntity)thePlayer.world.getEntityByID(message.entityId);
         	// DEBUG
         	if (theEntity == null)
         	{

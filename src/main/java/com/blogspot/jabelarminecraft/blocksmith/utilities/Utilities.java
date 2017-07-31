@@ -223,7 +223,7 @@ public class Utilities
     public static void sendEntitySyncPacketToClient(IEntity parEntity) 
     {
     	Entity theEntity = (Entity)parEntity;
-        if (!theEntity.worldObj.isRemote)
+        if (!theEntity.getEntityWorld().isRemote)
         {
         	// DEBUG
         	System.out.println("sendEntitySyncPacket from server for entity ID ="+theEntity.getEntityId());
@@ -234,7 +234,7 @@ public class Utilities
     public static void sendEntitySyncPacketToServer(IEntity parEntity) 
     {
     	Entity theEntity = (Entity)parEntity;
-        if (theEntity.worldObj.isRemote)
+        if (theEntity.getEntityWorld().isRemote)
         {
         	// DEBUG
         	System.out.println("sendEntitySyncPacket from client");
@@ -255,8 +255,8 @@ public class Utilities
      */
     public static double getHeightValue(World parWorld, double parX, double parZ)
     {
-        int intX = MathHelper.floor_double(parX);
-        int intZ = MathHelper.floor_double(parZ);
+        int intX = MathHelper.floor(parX);
+        int intZ = MathHelper.floor(parZ);
 
     	int chunkX = intX >> 4;
     	int chunkZ = intZ >> 4;
@@ -280,7 +280,7 @@ public class Utilities
                 theRenderViewEntity.posZ+0.5D
                 );
         RayTraceResult returnMOP = null;
-        if (mc.theWorld != null)
+        if (mc.world != null)
         {
             double var2 = dist;
             returnMOP = theRenderViewEntity.rayTrace(var2, 0);
@@ -293,11 +293,11 @@ public class Utilities
             }
             
             Vec3d lookvec = theRenderViewEntity.getLook(0);
-            Vec3d var8 = pos.addVector(lookvec.xCoord * var2, lookvec.yCoord * var2, lookvec.zCoord * var2);
+            Vec3d var8 = pos.addVector(lookvec.x * var2, lookvec.y * var2, lookvec.z * var2);
             Entity pointedEntity = null;
             float var9 = 1.0F;
             @SuppressWarnings("unchecked")
-            List<Entity> list = mc.theWorld.getEntitiesWithinAABBExcludingEntity(theRenderViewEntity, theViewBoundingBox.addCoord(lookvec.xCoord * var2, lookvec.yCoord * var2, lookvec.zCoord * var2).expand(var9, var9, var9));
+            List<Entity> list = mc.world.getEntitiesWithinAABBExcludingEntity(theRenderViewEntity, theViewBoundingBox.grow(lookvec.x * var2, lookvec.y * var2, lookvec.z * var2).expand(var9, var9, var9));
             double d = calcdist;
             
             for (Entity entity : list)
@@ -309,7 +309,7 @@ public class Utilities
                     aabb.expand(bordersize, bordersize, bordersize);
                     RayTraceResult mop0 = aabb.calculateIntercept(pos, var8);
                     
-                    if (aabb.isVecInside(pos))
+                    if (aabb.contains(pos))
                     {
                         if (0.0D < d || d == 0.0D)
                         {

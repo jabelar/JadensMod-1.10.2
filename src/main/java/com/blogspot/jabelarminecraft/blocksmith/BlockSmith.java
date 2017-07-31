@@ -21,24 +21,14 @@ package com.blogspot.jabelarminecraft.blocksmith;
 
 import java.io.File;
 
-import com.blogspot.jabelarminecraft.blocksmith.blocks.BlockCompactor;
-import com.blogspot.jabelarminecraft.blocksmith.blocks.BlockDeconstructor;
-import com.blogspot.jabelarminecraft.blocksmith.blocks.BlockForge;
-import com.blogspot.jabelarminecraft.blocksmith.blocks.BlockGrinder;
-import com.blogspot.jabelarminecraft.blocksmith.blocks.BlockMovingLightSource;
-import com.blogspot.jabelarminecraft.blocksmith.blocks.BlockTanningRack;
-import com.blogspot.jabelarminecraft.blocksmith.items.ItemCowHide;
-import com.blogspot.jabelarminecraft.blocksmith.items.ItemHorseHide;
-import com.blogspot.jabelarminecraft.blocksmith.items.ItemPigSkin;
-import com.blogspot.jabelarminecraft.blocksmith.items.ItemSheepSkin;
-import com.blogspot.jabelarminecraft.blocksmith.items.ItemSwordExtended;
 import com.blogspot.jabelarminecraft.blocksmith.materials.MaterialTanningRack;
 import com.blogspot.jabelarminecraft.blocksmith.proxy.CommonProxy;
 
-import net.minecraft.item.Item.ToolMaterial;
-import net.minecraft.stats.Achievement;
+import net.minecraft.advancements.Advancement;
+//import net.minecraft.stats.Achievement;
 import net.minecraft.stats.StatBasic;
-import net.minecraft.util.EnumChatFormatting;
+//import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -94,23 +84,23 @@ public class BlockSmith
     // see custom armor tutorial at: http://bedrockminer.jimdo.com/modding-tutorials/basic-modding/custom-armor/
     // public final static ArmorMaterial SAFEFALLINGLEATHER = EnumHelper.addArmorMaterial("SAFEFALLINGLEATHER", "safe_falling", 5, new int[]{2, 6, 5, 2}, 15);
     
-    // instantiate blocks
-    // need to instantiate some blocks before related item if the item constructor associates with block
-	public final static BlockTanningRack blockTanningRack = new BlockTanningRack();
-	public final static BlockGrinder blockGrinder = new BlockGrinder();
-	public final static BlockCompactor blockCompactor = new BlockCompactor();
-    public final static BlockDeconstructor blockDeconstructor = new BlockDeconstructor();
-    public final static BlockForge blockForge = new BlockForge(false);
-//    public final static BlockForge blockForgeLit = new BlockForge(true);
-    public final static BlockMovingLightSource blockMovingLightSource = new BlockMovingLightSource();
+//    // instantiate blocks
+//    // need to instantiate some blocks before related item if the item constructor associates with block
+//	public final static BlockTanningRack blockTanningRack = new BlockTanningRack();
+//	public final static BlockGrinder blockGrinder = new BlockGrinder();
+//	public final static BlockCompactor blockCompactor = new BlockCompactor();
+//    public final static BlockDeconstructor blockDeconstructor = new BlockDeconstructor();
+//    public final static BlockForge blockForge = new BlockForge(false);
+////    public final static BlockForge blockForgeLit = new BlockForge(true);
+//    public final static BlockMovingLightSource blockMovingLightSource = new BlockMovingLightSource();
 	
-    // instantiate items
-	// important to do this after blocks where item is associated with custom block, like with crop
-	public final static ItemCowHide cowHide = new ItemCowHide();
-	public final static ItemSheepSkin sheepSkin = new ItemSheepSkin();
-	public final static ItemPigSkin pigSkin = new ItemPigSkin();
-	public final static ItemHorseHide horseHide = new ItemHorseHide();
-	public final static ItemSwordExtended swordExtended = new ItemSwordExtended(ToolMaterial.IRON);
+//    // instantiate items
+//	// important to do this after blocks where item is associated with custom block, like with crop
+//	public final static ItemCowHide cowHide = new ItemCowHide();
+//	public final static ItemSheepSkin sheepSkin = new ItemSheepSkin();
+//	public final static ItemPigSkin pigSkin = new ItemPigSkin();
+//	public final static ItemHorseHide horseHide = new ItemHorseHide();
+//	public final static ItemSwordExtended swordExtended = new ItemSwordExtended(ToolMaterial.IRON);
     
 	// initiate spawn egg items
    
@@ -118,13 +108,13 @@ public class BlockSmith
     // important to do this after blocks in case structure uses custom block
 
 	// instantiate achievements
-    public static Achievement achievementTanningAHide;
-    public static Achievement craftTable;
-    public static Achievement deconstructAny;
-    public static Achievement deconstructDiamondHoe;
-    public static Achievement deconstructJunk;
-    public static Achievement deconstructDiamondShovel;
-    public static Achievement theHatStandAchievement;
+    public static Advancement achievementTanningAHide;
+    public static Advancement craftTable;
+    public static Advancement deconstructAny;
+    public static Advancement deconstructDiamondHoe;
+    public static Advancement deconstructJunk;
+    public static Advancement deconstructDiamondShovel;
+    public static Advancement theHatStandAchievement;
     
     // enumerate guis
     public enum GUI_ENUM 
@@ -157,9 +147,9 @@ public class BlockSmith
                 
         // hard-code mod information so don't need mcmod.info file
         event.getModMetadata().autogenerated = false ; // stops it from complaining about missing mcmod.info
-        event.getModMetadata().credits = EnumChatFormatting.BLUE+MODCREDITS;
-        event.getModMetadata().authorList.add(EnumChatFormatting.RED+MODAUTHOR);
-        event.getModMetadata().description = EnumChatFormatting.YELLOW+MODDESCRIPTION;
+        event.getModMetadata().credits = TextFormatting.BLUE+MODCREDITS;
+        event.getModMetadata().authorList.add(TextFormatting.RED+MODAUTHOR);
+        event.getModMetadata().description = TextFormatting.YELLOW+MODDESCRIPTION;
         event.getModMetadata().url = MODURL;
         event.getModMetadata().logoFile = MODLOGO;
         

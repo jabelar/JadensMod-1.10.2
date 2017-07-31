@@ -19,6 +19,7 @@ package com.blogspot.jabelarminecraft.blocksmith.blocks;
 import java.util.Random;
 
 import com.blogspot.jabelarminecraft.blocksmith.BlockSmith;
+import com.blogspot.jabelarminecraft.blocksmith.registries.BlockRegistry;
 import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityCompactor;
 import com.blogspot.jabelarminecraft.blocksmith.utilities.Utilities;
 
@@ -72,17 +73,7 @@ public class BlockCompactor extends BlockContainer
         useNeighborBrightness = false;
     }
 
-    /**
-     * Get the Item that this Block should drop when harvested.
-     *  
-     * @param fortune the level of the Fortune enchantment on the player's tool
-     */
-    @Override
-	public Item getItemDropped(IBlockState state, Random rand, int fortune)
-    {
-        return Item.getItemFromBlock(BlockSmith.blockCompactor);
-    }
-
+ 
     @Override
 	public void onBlockAdded(World parWorld, BlockPos parBlockPos, IBlockState parIBlockState)
     {
@@ -154,7 +145,7 @@ public class BlockCompactor extends BlockContainer
     }
 
     @Override
-	public boolean onBlockActivated(World parWorld, BlockPos parBlockPos, IBlockState parIBlockState, EntityPlayer parPlayer, EnumHand parHand, ItemStack parItemStack, EnumFacing parSide, float hitX, float hitY, float hitZ)
+	public boolean onBlockActivated(World parWorld, BlockPos parBlockPos, IBlockState parIBlockState, EntityPlayer parPlayer, EnumHand parHand, EnumFacing parSide, float hitX, float hitY, float hitZ)
     {
         if (!parWorld.isRemote)
         {
@@ -204,7 +195,7 @@ public class BlockCompactor extends BlockContainer
     }
 
     @Override
-	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
+	public IBlockState getStateForPlacement(World world, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer, EnumHand hand)
     {
         return getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
     }
@@ -252,13 +243,6 @@ public class BlockCompactor extends BlockContainer
     public int getComparatorInputOverride(IBlockState blockState, World worldIn, BlockPos pos)
     {
         return Container.calcRedstone(worldIn.getTileEntity(pos));
-    }
-
-    @Override
-	@SideOnly(Side.CLIENT)
-    public ItemStack getItem(World worldIn, BlockPos pos, IBlockState parBlockState)
-    {
-        return new ItemStack(Item.getItemFromBlock(BlockSmith.blockCompactor));
     }
 
     /**
