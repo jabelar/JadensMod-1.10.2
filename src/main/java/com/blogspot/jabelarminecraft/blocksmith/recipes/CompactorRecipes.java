@@ -95,7 +95,7 @@ public class CompactorRecipes
         }
         while (!areItemStacksEqual(parItemStack, (ItemStack)entry.getKey()));
 
-        return ((ItemStack)entry.getKey()).stackSize;
+        return ((ItemStack)entry.getKey()).getCount();
     }
 
     private boolean areItemStacksEqual(ItemStack parItemStack1, ItemStack parItemStack2)

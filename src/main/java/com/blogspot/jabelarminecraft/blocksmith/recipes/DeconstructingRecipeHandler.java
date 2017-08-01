@@ -7,8 +7,10 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
@@ -38,12 +40,9 @@ public final class DeconstructingRecipeHandler
             return DeconstructingAddedRecipes.getCraftingGrid(theItem);
         }
 
-        // check all recipes for recipe for Itemstack
-        List<?> listAllRecipes = CraftingManager.getInstance().getRecipeList();
-                
-        for(int i = 0;i<listAllRecipes.size();i++)
+        // check all recipes for recipe for Itemstack               
+        for(IRecipe recipe : CraftingManager.REGISTRY)
         {
-            IRecipe recipe = (IRecipe) listAllRecipes.get(i);
             if(recipe != null)
             {
                 ItemStack recipeKeyItemStack = recipe.getRecipeOutput();
@@ -68,14 +67,17 @@ public final class DeconstructingRecipeHandler
             resultItemStackArray[j] = null;
         }
         
+        GameRegistry.addShapedRecipe(name, group, output, params);
         if (parRecipe instanceof ShapedRecipes)
         {
             // DEBUG
             System.out.println("getCraftingGrid for shaped recipe");
             ShapedRecipes shaped = (ShapedRecipes)parRecipe;
-            for(int j = 0;j<shaped.recipeItems.length;j++)
+            int j = 0;
+            for(Ingredient ingredient: shaped.getIngredients())
             {
-                resultItemStackArray[j] = shaped.recipeItems[j];
+                resultItemStackArray[j] = ingredient.getMatchingStacks().;
+                j++;
             }
         }
         

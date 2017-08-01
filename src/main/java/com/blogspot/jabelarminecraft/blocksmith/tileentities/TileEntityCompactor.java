@@ -213,7 +213,7 @@ public class TileEntityCompactor extends TileEntityLockable implements ITickable
 
             if (b0 >= 0 && b0 < compactorItemStackArray.length)
             {
-                compactorItemStackArray[b0] = ItemStack.loadItemStackFromNBT(nbtTagCompound);
+                compactorItemStackArray[b0] = new ItemStack(nbtTagCompound);
             }
         }
 
@@ -293,7 +293,7 @@ public class TileEntityCompactor extends TileEntityLockable implements ITickable
             --timeCanCompact;
         }
 
-        if (!worldObj.isRemote)
+        if (!world.isRemote)
         {
         	// if something in input slot
             if (compactorItemStackArray[slotEnum.INPUT_SLOT.ordinal()] != null)
@@ -342,7 +342,7 @@ public class TileEntityCompactor extends TileEntityLockable implements ITickable
             if (hasBeenCompacting != compactingSomething()) // the isCompacting() value may have changed due to call to compactItem() earlier
             {
                 changedCompactingState = true;
-                BlockCompactor.changeBlockBasedOnCompactingStatus(compactingSomething(), worldObj, pos);
+                BlockCompactor.changeBlockBasedOnCompactingStatus(compactingSomething(), world, pos);
             }
         }
 
@@ -380,7 +380,7 @@ public class TileEntityCompactor extends TileEntityLockable implements ITickable
             if (stackInOutputSlot == null) // output slot is empty
             {
             	// check if enough of the input item (to allow recipes that consume multiple amounts)            }
-            	if (stackInInputSlot.stackSize >= CompactorRecipes.instance().getInputAmount(stackInInputSlot))
+            	if (stackInInputSlot.getCount() >= CompactorRecipes.instance().getInputAmount(stackInInputSlot))
             	{
 //            		// DEBUG
 //            		System.out.println("There is "+stackInInputSlot.stackSize+" in input slot and "+CompactorRecipes.instance().getInputAmount(stackInInputSlot)+" is needed");
@@ -398,11 +398,11 @@ public class TileEntityCompactor extends TileEntityLockable implements ITickable
             	return false;
             }
             // check if output slot is full
-            int result = stackInOutputSlot.stackSize + itemStackToOutput.stackSize;
+            int result = stackInOutputSlot.getCount() + itemStackToOutput.getCount();
             if (result <= getInventoryStackLimit() && result <= stackInOutputSlot.getMaxStackSize())
             {
             	// check if enough of the input item (to allow recipes that consume multiple amounts)            }
-            	if (stackInInputSlot.stackSize >= CompactorRecipes.instance().getInputAmount(stackInInputSlot))
+            	if (stackInInputSlot.getCount() >= CompactorRecipes.instance().getInputAmount(stackInInputSlot))
             	{
 //            		// DEBUG
 //            		System.out.println("There is "+stackInInputSlot.stackSize+" in input slot and "+CompactorRecipes.instance().getInputAmount(stackInInputSlot)+" is needed");
@@ -438,27 +438,31 @@ public class TileEntityCompactor extends TileEntityLockable implements ITickable
             }
             else if (compactorItemStackArray[slotEnum.OUTPUT_SLOT.ordinal()].getItem() == itemstack.getItem())
             {
-                compactorItemStackArray[slotEnum.OUTPUT_SLOT.ordinal()].stackSize += itemstack.stackSize; // Forge BugFix: Results may have multiple items
+                compactorItemStackArray[slotEnum.OUTPUT_SLOT.ordinal()].setCount(compactorItemStackArray[slotEnum.OUTPUT_SLOT.ordinal()].getCount() + itemstack.getCount()); // Forge BugFix: Results may have multiple items
             }
 
             // consume the number of input items based on recipe
-            compactorItemStackArray[slotEnum.INPUT_SLOT.ordinal()].stackSize -= CompactorRecipes.instance().getInputAmount(compactorItemStackArray[slotEnum.INPUT_SLOT.ordinal()]);
+            compactorItemStackArray[slotEnum.INPUT_SLOT.ordinal()].setCount(
+            		compactorItemStackArray[slotEnum.INPUT_SLOT.ordinal()].getCount() 
+            		- CompactorRecipes.instance().getInputAmount(compactorItemStackArray[slotEnum.INPUT_SLOT.ordinal()])
+            		);
 
-            if (compactorItemStackArray[slotEnum.INPUT_SLOT.ordinal()].stackSize <= 0)
+            if (compactorItemStackArray[slotEnum.INPUT_SLOT.ordinal()].getCount() <= 0)
             {
                 compactorItemStackArray[slotEnum.INPUT_SLOT.ordinal()] = null;
             }
         }
     }
 
-    /**
-     * Do not make give this method the name canInteractWith because it clashes with Container
-     */
-    @Override
-	public boolean isUseableByPlayer(EntityPlayer playerIn)
-    {
-        return worldObj.getTileEntity(pos) != this ? false : playerIn.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
-    }
+//    /**
+//     * Do not make give this method the name canInteractWith because it clashes with Container
+//     */
+//    @Override
+//	public boolean isUseableByPlayer(EntityPlayer playerIn)
+//    {
+//    	this.
+//        return world.getTileEntity(pos) != this ? false : playerIn.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
+//    }
 
     @Override
 	public void openInventory(EntityPlayer playerIn) {}

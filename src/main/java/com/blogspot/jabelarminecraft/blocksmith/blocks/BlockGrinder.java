@@ -19,6 +19,7 @@ package com.blogspot.jabelarminecraft.blocksmith.blocks;
 import java.util.Random;
 
 import com.blogspot.jabelarminecraft.blocksmith.BlockSmith;
+import com.blogspot.jabelarminecraft.blocksmith.registries.BlockRegistry;
 import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityGrinder;
 import com.blogspot.jabelarminecraft.blocksmith.utilities.Utilities;
 
@@ -78,7 +79,7 @@ public class BlockGrinder extends BlockContainer
     @Override
 	public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return Item.getItemFromBlock(BlockSmith.blockGrinder);
+        return Item.getItemFromBlock(BlockRegistry.GRINDER);
     }
 
     @Override
@@ -148,7 +149,17 @@ public class BlockGrinder extends BlockContainer
     }
 
     @Override
-	public boolean onBlockActivated(World parWorld, BlockPos parBlockPos, IBlockState parIBlockState, EntityPlayer parPlayer, EnumHand parHand, ItemStack parStack, EnumFacing parFacing, float hitX, float hitY, float hitZ)
+	public boolean onBlockActivated(
+			World parWorld, 
+			BlockPos parBlockPos, 
+			IBlockState parIBlockState, 
+			EntityPlayer parPlayer, 
+			EnumHand parHand, 
+			EnumFacing side, 
+			float hitX, 
+			float hitY, 
+			float hitZ
+			)
     {
         if (!parWorld.isRemote)
         {
@@ -195,12 +206,6 @@ public class BlockGrinder extends BlockContainer
     	// DEBUG
     	System.out.println("BlockGrinder createNewTileEntity()");
         return new TileEntityGrinder();
-    }
-
-    @Override
-	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
-    {
-        return getDefaultState().withProperty(FACING, placer.getHorizontalFacing().getOpposite());
     }
 
     @Override
@@ -252,7 +257,7 @@ public class BlockGrinder extends BlockContainer
 	@SideOnly(Side.CLIENT)
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState parIBlockState)
     {
-        return new ItemStack(Item.getItemFromBlock(BlockSmith.blockGrinder));
+        return new ItemStack(Item.getItemFromBlock(BlockRegistry.GRINDER));
     }
 
     /**

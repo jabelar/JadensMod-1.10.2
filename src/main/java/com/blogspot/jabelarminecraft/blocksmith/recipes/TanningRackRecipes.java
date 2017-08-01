@@ -24,6 +24,7 @@ import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
 import com.blogspot.jabelarminecraft.blocksmith.BlockSmith;
+import com.blogspot.jabelarminecraft.blocksmith.registries.ItemRegistry;
 import com.google.common.collect.Maps;
 
 /**
@@ -44,11 +45,11 @@ public class TanningRackRecipes
 
     private TanningRackRecipes()
     {
-        addTanningRecipe(new ItemStack(BlockSmith.cowHide), new ItemStack(Items.leather), 0.7F);
-        addTanningRecipe(new ItemStack(BlockSmith.sheepSkin), new ItemStack(Items.leather), 0.7F);
-        addTanningRecipe(new ItemStack(BlockSmith.pigSkin), new ItemStack(Items.leather), 0.7F);
-        addTanningRecipe(new ItemStack(BlockSmith.horseHide), new ItemStack(Items.leather, 2), 0.7F);
-        addTanningRecipe(new ItemStack(Items.rabbit_hide, 4), new ItemStack(Items.leather, 1), 0.7F);
+        addTanningRecipe(new ItemStack(ItemRegistry.COW_HIDE), new ItemStack(Items.LEATHER), 0.7F);
+        addTanningRecipe(new ItemStack(ItemRegistry.SHEEP_SKIN), new ItemStack(Items.LEATHER), 0.7F);
+        addTanningRecipe(new ItemStack(ItemRegistry.PIG_SKIN), new ItemStack(Items.LEATHER), 0.7F);
+        addTanningRecipe(new ItemStack(ItemRegistry.HORSE_HIDE), new ItemStack(Items.LEATHER, 2), 0.7F);
+        addTanningRecipe(new ItemStack(Items.RABBIT_HIDE, 4), new ItemStack(Items.LEATHER, 1), 0.7F);
     }
 
     public void addTanningRecipe(ItemStack parItemStackIn, ItemStack parItemStackOut, float parExperience)

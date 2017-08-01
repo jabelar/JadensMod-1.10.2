@@ -34,11 +34,11 @@ public class GuiFactory implements IModGuiFactory
  
     }
  
-    @Override
-    public Class<? extends GuiScreen> mainConfigGuiClass() 
-    {
-        return GuiConfig.class;
-    }
+//    @Override
+//    public Class<? extends GuiScreen> mainConfigGuiClass() 
+//    {
+//        return GuiConfig.class;
+//    }
  
     @Override
     public Set<RuntimeOptionCategoryElement> runtimeGuiCategories() 
@@ -46,9 +46,21 @@ public class GuiFactory implements IModGuiFactory
         return null;
     }
  
-    @Override
-    public RuntimeOptionGuiHandler getHandlerFor(RuntimeOptionCategoryElement element) 
-    {
-        return null;
-    }
+//    @Override
+//    public RuntimeOptionGuiHandler getHandlerFor(RuntimeOptionCategoryElement element) 
+//    {
+//        return null;
+//    }
+
+	@Override
+	public boolean hasConfigGui() 
+	{
+		return false;
+	}
+
+	@Override
+	public GuiScreen createConfigGui(GuiScreen parentScreen) 
+	{
+		return new GuiConfig(parentScreen);
+	}
 }

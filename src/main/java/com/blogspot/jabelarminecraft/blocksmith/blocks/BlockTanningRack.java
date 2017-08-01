@@ -19,6 +19,7 @@ package com.blogspot.jabelarminecraft.blocksmith.blocks;
 import java.util.Random;
 
 import com.blogspot.jabelarminecraft.blocksmith.BlockSmith;
+import com.blogspot.jabelarminecraft.blocksmith.registries.BlockRegistry;
 import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityTanningRack;
 import com.blogspot.jabelarminecraft.blocksmith.utilities.Utilities;
 
@@ -87,7 +88,7 @@ public class BlockTanningRack extends BlockContainer
 
 //    	// DEBUG
 //    	System.out.println("changeBlockBasedOnTanningStatus() with tanning complete = "+parTanningComplete);
-        parWorld.setBlockState(parBlockPos, BlockSmith.blockTanningRack.getDefaultState().withProperty(TANNING_INGREDIENT, parTanningIngredient), 3);
+        parWorld.setBlockState(parBlockPos, BlockRegistry.TANNING_RACK.getDefaultState().withProperty(TANNING_INGREDIENT, parTanningIngredient), 3);
         if (theTileEntity != null)
         {
             theTileEntity.validate();
@@ -103,7 +104,7 @@ public class BlockTanningRack extends BlockContainer
     @Override
 	public Item getItemDropped(IBlockState state, Random rand, int fortune)
     {
-        return Item.getItemFromBlock(BlockSmith.blockTanningRack);
+        return Item.getItemFromBlock(BlockRegistry.TANNING_RACK);
     }
 
     @Override
@@ -123,7 +124,17 @@ public class BlockTanningRack extends BlockContainer
     }
 
     @Override
-	public boolean onBlockActivated(World parWorld, BlockPos parBlockPos, IBlockState parIBlockState, EntityPlayer parPlayer, EnumHand parHand, ItemStack parStack, EnumFacing parSide, float hitX, float hitY, float hitZ)
+	public boolean onBlockActivated(
+			World parWorld, 
+			BlockPos parBlockPos, 
+			IBlockState parIBlockState, 
+			EntityPlayer parPlayer, 
+			EnumHand parHand, 
+			EnumFacing side, 
+			float hitX, 
+			float hitY, 
+			float hitZ
+			)
     {
         if (!parWorld.isRemote)
         {
@@ -147,11 +158,11 @@ public class BlockTanningRack extends BlockContainer
         return new TileEntityTanningRack();
     }
 
-    @Override
-	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
-    {
-        return getDefaultState().withProperty(TANNING_INGREDIENT, 0);
-    }
+//    @Override
+//	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
+//    {
+//        return getDefaultState().withProperty(TANNING_INGREDIENT, 0);
+//    }
 
     @Override
 	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
@@ -201,7 +212,7 @@ public class BlockTanningRack extends BlockContainer
 	@SideOnly(Side.CLIENT)
     public ItemStack getItem(World worldIn, BlockPos pos, IBlockState parIBlockState)
     {
-        return new ItemStack(Item.getItemFromBlock(BlockSmith.blockTanningRack));
+        return new ItemStack(Item.getItemFromBlock(BlockRegistry.TANNING_RACK));
     }
 
     /**
@@ -243,12 +254,6 @@ public class BlockTanningRack extends BlockContainer
     public BlockRenderLayer getBlockLayer()
     {
     	return BlockRenderLayer.TRANSLUCENT;
-    }
-    
-    @Override
-	public boolean isBlockSolid(IBlockAccess parWorld, BlockPos parBlockPos, EnumFacing parSide)
-    {
-    	return parWorld.getBlockState(parBlockPos).getMaterial().isSolid();
     }
     
     @Override

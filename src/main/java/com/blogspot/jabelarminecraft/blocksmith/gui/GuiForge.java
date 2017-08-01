@@ -53,8 +53,8 @@ public class GuiForge extends GuiContainer
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
         String s = tileForge.getDisplayName().getUnformattedText();
-        fontRendererObj.drawString(s, xSize / 2 - fontRendererObj.getStringWidth(s) / 2, 6, 4210752);
-        fontRendererObj.drawString(inventoryPlayer.getDisplayName().getUnformattedText(), 8, ySize - 96 + 2, 4210752);
+        fontRenderer.drawString(s, xSize / 2 - fontRenderer.getStringWidth(s) / 2, 6, 4210752);
+        fontRenderer.drawString(inventoryPlayer.getDisplayName().getUnformattedText(), 8, ySize - 96 + 2, 4210752);
     }
 
     /**

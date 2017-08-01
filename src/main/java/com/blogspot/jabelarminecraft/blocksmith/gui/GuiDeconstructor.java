@@ -4,8 +4,8 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -46,24 +46,24 @@ public class GuiDeconstructor extends GuiContainer
     {
         GL11.glDisable(GL11.GL_LIGHTING);
 
-        fontRendererObj.drawString(blockName, xSize / 2 - fontRendererObj.getStringWidth(blockName) / 2 + 1, 5, 4210752);
-        fontRendererObj.drawString(I18n.format("container.inventory"), 6, ySize - 96 + 2, 4210752);
+        fontRenderer.drawString(blockName, xSize / 2 - fontRenderer.getStringWidth(blockName) / 2 + 1, 5, 4210752);
+        fontRenderer.drawString(I18n.format("container.inventory"), 6, ySize - 96 + 2, 4210752);
 
         String string = container.resultString;
         if(string != null)
         {
             State msgType = container.deconstructingState;
-            EnumChatFormatting format = EnumChatFormatting.GREEN;
-            EnumChatFormatting shadowFormat = EnumChatFormatting.DARK_GRAY;
+            TextFormatting format = TextFormatting.GREEN;
+            TextFormatting shadowFormat = TextFormatting.DARK_GRAY;
             if(msgType == ContainerDeconstructor.State.ERROR)
             {
-                format = EnumChatFormatting.WHITE;
-                shadowFormat = EnumChatFormatting.DARK_RED;
+                format = TextFormatting.WHITE;
+                shadowFormat = TextFormatting.DARK_RED;
             }
 
-            fontRendererObj.drawString(shadowFormat + string + EnumChatFormatting.RESET, 6 + 1, ySize - 95 + 2 - fontRendererObj.FONT_HEIGHT, 0);
+            fontRenderer.drawString(shadowFormat + string + TextFormatting.RESET, 6 + 1, ySize - 95 + 2 - fontRenderer.FONT_HEIGHT, 0);
 
-            fontRendererObj.drawString(format + string + EnumChatFormatting.RESET, 6, ySize - 96 + 2 - fontRendererObj.FONT_HEIGHT, 0);
+            fontRenderer.drawString(format + string + TextFormatting.RESET, 6, ySize - 96 + 2 - fontRenderer.FONT_HEIGHT, 0);
         }
 
         GL11.glEnable(GL11.GL_LIGHTING);

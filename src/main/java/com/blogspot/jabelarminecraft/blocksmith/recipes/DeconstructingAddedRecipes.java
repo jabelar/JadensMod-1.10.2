@@ -30,10 +30,10 @@ public class DeconstructingAddedRecipes
     public static boolean shouldAddRecipe(Item parItem)
     {
         return 
-                (  parItem == Items.enchanted_book
-                || parItem == Items.iron_horse_armor // even though there is recipe, want to adjust wool color
-                || parItem == Items.golden_horse_armor // even though there is recipe, want to adjust wool color
-                || parItem == Items.diamond_horse_armor // even though there is recipe, want to adjust wool color
+                (  parItem == Items.ENCHANTED_BOOK
+                || parItem == Items.IRON_HORSE_ARMOR // even though there is recipe, want to adjust WOOL color
+                || parItem == Items.GOLDEN_HORSE_ARMOR // even though there is recipe, want to adjust WOOL color
+                || parItem == Items.DIAMOND_HORSE_ARMOR // even though there is recipe, want to adjust WOOL color
                 );
     }
     
@@ -47,55 +47,55 @@ public class DeconstructingAddedRecipes
         }
         
         // Create deconstructing recipes for things that don't have crafting recipes
-        if (parItem == Items.enchanted_book)
+        if (parItem == Items.ENCHANTED_BOOK)
         {
             resultItemStackArray = new ItemStack[] {
-                    null, new ItemStack(Items.leather, 1, 0), null,
-                    new ItemStack(Items.paper, 1, 0), new ItemStack(Items.paper, 1, 0),    new ItemStack(Items.paper, 1, 0),
+                    null, new ItemStack(Items.LEATHER, 1, 0), null,
+                    new ItemStack(Items.PAPER, 1, 0), new ItemStack(Items.PAPER, 1, 0),    new ItemStack(Items.PAPER, 1, 0),
                     null, null, null
             };
         }
-        // Even though horse armor has recipe, need to adjust the wool color when deconstructed
-        else if (parItem == Items.iron_horse_armor)
+        // Even though horse armor has recipe, need to adjust the WOOL color when deconstructed
+        else if (parItem == Items.IRON_HORSE_ARMOR)
         {
             return new ItemStack[] {
                     null,
                     null,
-                    new ItemStack(Items.iron_ingot, 1, 0),
-                    new ItemStack(Items.iron_ingot, 1, 0),
-                    new ItemStack(Item.getItemFromBlock(Blocks.wool), 1, 15),
-                    new ItemStack(Items.iron_ingot, 1, 0),
-                    new ItemStack(Items.iron_ingot, 1, 0),
-                    new ItemStack(Items.iron_ingot, 1, 0),
-                    new ItemStack(Items.iron_ingot, 1, 0)
+                    new ItemStack(Items.IRON_INGOT, 1, 0),
+                    new ItemStack(Items.IRON_INGOT, 1, 0),
+                    new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 15),
+                    new ItemStack(Items.IRON_INGOT, 1, 0),
+                    new ItemStack(Items.IRON_INGOT, 1, 0),
+                    new ItemStack(Items.IRON_INGOT, 1, 0),
+                    new ItemStack(Items.IRON_INGOT, 1, 0)
             };
         }
-        else if (parItem == Items.golden_horse_armor)
+        else if (parItem == Items.GOLDEN_HORSE_ARMOR)
         {
             return new ItemStack[] {
                     null,
                     null,
-                    new ItemStack(Items.gold_ingot, 1, 0),
-                    new ItemStack(Items.gold_ingot, 1, 0),
-                    new ItemStack(Item.getItemFromBlock(Blocks.wool), 1, 12),
-                    new ItemStack(Items.gold_ingot, 1, 0),
-                    new ItemStack(Items.gold_ingot, 1, 0),
-                    new ItemStack(Items.gold_ingot, 1, 0),
-                    new ItemStack(Items.gold_ingot, 1, 0)
+                    new ItemStack(Items.GOLD_INGOT, 1, 0),
+                    new ItemStack(Items.GOLD_INGOT, 1, 0),
+                    new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 12),
+                    new ItemStack(Items.GOLD_INGOT, 1, 0),
+                    new ItemStack(Items.GOLD_INGOT, 1, 0),
+                    new ItemStack(Items.GOLD_INGOT, 1, 0),
+                    new ItemStack(Items.GOLD_INGOT, 1, 0)
             };
         }
-        else if (parItem == Items.diamond_horse_armor)
+        else if (parItem == Items.DIAMOND_HORSE_ARMOR)
         {
             return new ItemStack[] {
                     null,
                     null,
-                    new ItemStack(Items.diamond, 1, 0),
-                    new ItemStack(Items.diamond, 1, 0),
-                    new ItemStack(Item.getItemFromBlock(Blocks.wool), 1, 11),
-                    new ItemStack(Items.diamond, 1, 0),
-                    new ItemStack(Items.diamond, 1, 0),
-                    new ItemStack(Items.diamond, 1, 0),
-                    new ItemStack(Items.diamond, 1, 0)
+                    new ItemStack(Items.DIAMOND, 1, 0),
+                    new ItemStack(Items.DIAMOND, 1, 0),
+                    new ItemStack(Item.getItemFromBlock(Blocks.WOOL), 1, 11),
+                    new ItemStack(Items.DIAMOND, 1, 0),
+                    new ItemStack(Items.DIAMOND, 1, 0),
+                    new ItemStack(Items.DIAMOND, 1, 0),
+                    new ItemStack(Items.DIAMOND, 1, 0)
             };
         }
         return resultItemStackArray;

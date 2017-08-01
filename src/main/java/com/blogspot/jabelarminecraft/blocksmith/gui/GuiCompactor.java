@@ -34,7 +34,7 @@ import com.blogspot.jabelarminecraft.blocksmith.containers.ContainerCompactor;
 @SideOnly(Side.CLIENT)
 public class GuiCompactor extends GuiContainer
 {
-	private static final ResourceLocation compactorGuiTextures = new ResourceLocation(BlockSmith.MODID+":textures/gui/container/compactor.png");
+	private static final ResourceLocation COMPACTOR_GUI_TEXTURES = new ResourceLocation(BlockSmith.MODID+":textures/gui/container/compactor.png");
     private final InventoryPlayer inventoryPlayer;
     private final IInventory tileCompactor;
 
@@ -52,8 +52,8 @@ public class GuiCompactor extends GuiContainer
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)
     {
         String s = tileCompactor.getDisplayName().getUnformattedText();
-        fontRendererObj.drawString(s, xSize / 2 - fontRendererObj.getStringWidth(s) / 2, 6, 4210752);
-        fontRendererObj.drawString(inventoryPlayer.getDisplayName().getUnformattedText(), 8, ySize - 96 + 2, 4210752);
+        fontRenderer.drawString(s, xSize / 2 - fontRenderer.getStringWidth(s) / 2, 6, 4210752);
+        fontRenderer.drawString(inventoryPlayer.getDisplayName().getUnformattedText(), 8, ySize - 96 + 2, 4210752);
     }
 
     /**
@@ -63,7 +63,7 @@ public class GuiCompactor extends GuiContainer
 	protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY)
     {
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        mc.getTextureManager().bindTexture(compactorGuiTextures);
+        mc.getTextureManager().bindTexture(COMPACTOR_GUI_TEXTURES);
         int marginHorizontal = (width - xSize) / 2;
         int marginVertical = (height - ySize) / 2;
         drawTexturedModalRect(marginHorizontal, marginVertical, 0, 0, xSize, ySize);
