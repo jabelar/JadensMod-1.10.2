@@ -21,7 +21,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.MathHelper;
+import net.minecraft.util.math.MathHelper;
 
 import com.blogspot.jabelarminecraft.blocksmith.recipes.CompactorRecipes;
 
@@ -29,58 +29,11 @@ import com.blogspot.jabelarminecraft.blocksmith.recipes.CompactorRecipes;
  * @author jabelar
  *
  */
-public class SlotCompactorOutput  extends Slot
+public class SlotCompactorOutput  extends SlotOutput
 {
-    /** The player that is using the GUI where this slot resides. */
-    private final EntityPlayer thePlayer;
-    private int numCompactorOutput;
-
     public SlotCompactorOutput(EntityPlayer parPlayer, IInventory parIInventory, int parSlotIndex, int parXDisplayPosition, int parYDisplayPosition)
     {
-        super(parIInventory, parSlotIndex, parXDisplayPosition, parYDisplayPosition);
-        thePlayer = parPlayer;
-    }
-
-    /**
-     * Check if the stack is a valid item for this slot. .
-     */
-    @Override
-	public boolean isItemValid(ItemStack stack)
-    {
-        return false; // can't place anything into it
-    }
-
-    /**
-     * Decrease the size of the stack in slot by the amount of the int arg. Returns the new
-     * stack.
-     */
-    @Override
-	public ItemStack decrStackSize(int parAmount)
-    {
-        if (getHasStack())
-        {
-            numCompactorOutput += Math.min(parAmount, getStack().stackSize);
-        }
-
-        return super.decrStackSize(parAmount);
-    }
-
-    @Override
-	public void onPickupFromSlot(EntityPlayer playerIn, ItemStack stack)
-    {
-        onCrafting(stack);
-        super.onPickupFromSlot(playerIn, stack);
-    }
-
-    /**
-     * the itemStack passed in is the output - ie, iron ingots, and pickaxes, not ore and wood. Typically increases an
-     * internal count then calls onCrafting(item).
-     */
-    @Override
-	protected void onCrafting(ItemStack parItemStack, int parAmountGround)
-    {
-        numCompactorOutput += parAmountGround;
-        onCrafting(parItemStack);
+        super(parPlayer, parIInventory, parSlotIndex, parXDisplayPosition, parYDisplayPosition);
     }
 
     /**
@@ -92,9 +45,9 @@ public class SlotCompactorOutput  extends Slot
 //		  this adds a stat count    	
 //        parItemStack.onCrafting(thePlayer.worldObj, thePlayer, field_75228_b);
 
-        if (!thePlayer.worldObj.isRemote)
+        if (!thePlayer.world.isRemote)
         {
-            int expEarned = numCompactorOutput;
+            int expEarned = getNumOutput();
             float expFactor = CompactorRecipes.instance().getCompactingExperience(parItemStack);
 
             if (expFactor == 0.0F)
@@ -103,9 +56,9 @@ public class SlotCompactorOutput  extends Slot
             }
             else if (expFactor < 1.0F)
             {
-                int possibleExpEarned = MathHelper.floor_float(expEarned * expFactor);
+                int possibleExpEarned = MathHelper.floor(expEarned * expFactor);
 
-                if (possibleExpEarned < MathHelper.ceiling_float_int(expEarned * expFactor) && Math.random() < expEarned * expFactor - possibleExpEarned)
+                if (possibleExpEarned < MathHelper.ceil(expEarned * expFactor) && Math.random() < expEarned * expFactor - possibleExpEarned)
                 {
                     ++possibleExpEarned;
                 }
@@ -119,11 +72,11 @@ public class SlotCompactorOutput  extends Slot
             {
                 expInOrb = EntityXPOrb.getXPSplit(expEarned);
                 expEarned -= expInOrb;
-                thePlayer.worldObj.spawnEntityInWorld(new EntityXPOrb(thePlayer.worldObj, thePlayer.posX, thePlayer.posY + 0.5D, thePlayer.posZ + 0.5D, expInOrb));
+                thePlayer.world.spawnEntity(new EntityXPOrb(thePlayer.world, thePlayer.posX, thePlayer.posY + 0.5D, thePlayer.posZ + 0.5D, expInOrb));
             }
         }
 
-        numCompactorOutput = 0;
+        setNumOutput(0);
 
 //        if (parItemStack.getItem() == Items.iron_ingot)
 //        {

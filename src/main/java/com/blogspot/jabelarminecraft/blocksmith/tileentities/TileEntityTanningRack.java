@@ -23,14 +23,15 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.server.gui.IUpdatePlayerListBox;
 import net.minecraft.tileentity.TileEntityLockable;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ITickable;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -44,7 +45,7 @@ import com.blogspot.jabelarminecraft.blocksmith.recipes.TanningRackRecipes;
  * @author jabelar
  *
  */
-public class TileEntityTanningRack extends TileEntityLockable implements IUpdatePlayerListBox, ISidedInventory
+public class TileEntityTanningRack extends TileEntityLockable implements ITickable, ISidedInventory
 {
     // enumerate the slots
     public enum slotEnum 
@@ -103,7 +104,7 @@ public class TileEntityTanningRack extends TileEntityLockable implements IUpdate
         {
             ItemStack itemstack;
 
-            if (tanningRackItemStackArray[index].stackSize <= count)
+            if (tanningRackItemStackArray[index].getCount() <= count)
             {
                 itemstack = tanningRackItemStackArray[index];
                 tanningRackItemStackArray[index] = null;
@@ -113,7 +114,7 @@ public class TileEntityTanningRack extends TileEntityLockable implements IUpdate
             {
                 itemstack = tanningRackItemStackArray[index].splitStack(count);
 
-                if (tanningRackItemStackArray[index].stackSize == 0)
+                if (tanningRackItemStackArray[index].getCount() == 0)
                 {
                     tanningRackItemStackArray[index] = null;
                 }
@@ -126,6 +127,15 @@ public class TileEntityTanningRack extends TileEntityLockable implements IUpdate
             return null;
         }
     }
+    
+    /**
+     * Removes a stack from the given slot and returns it.
+     */
+    public ItemStack removeStackFromSlot(int index)
+    {
+        return ItemStackHelper.getAndRemove(this.furnaceItemStacks, index);
+    }
+
 
     /**
      * When some containers are closed they call this on each slot, then drop whatever it returns as an EntityItem -
@@ -555,4 +565,28 @@ public class TileEntityTanningRack extends TileEntityLockable implements IUpdate
             tanningRackItemStackArray[i] = null;
         }
     }
+
+	@Override
+	public boolean isEmpty() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public ItemStack removeStackFromSlot(int index) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isUsableByPlayer(EntityPlayer player) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public String getName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

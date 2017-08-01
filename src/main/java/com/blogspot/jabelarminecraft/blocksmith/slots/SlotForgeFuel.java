@@ -38,6 +38,6 @@ public class SlotForgeFuel extends Slot
 
     public static boolean isItemBucket(ItemStack parItemStack)
     {
-        return parItemStack != null && parItemStack.getItem() != null && parItemStack.getItem() == Items.bucket;
+        return parItemStack != null && parItemStack.getItem() != null && parItemStack.getItem() == Items.BUCKET;
     }
 }
