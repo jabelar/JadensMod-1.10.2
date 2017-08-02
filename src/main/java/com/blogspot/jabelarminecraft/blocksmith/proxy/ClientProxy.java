@@ -19,24 +19,6 @@
 
 package com.blogspot.jabelarminecraft.blocksmith.proxy;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.ModelPig;
-import net.minecraft.client.renderer.RenderItem;
-import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.renderer.entity.RenderPig;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.client.registry.RenderingRegistry;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
@@ -45,9 +27,24 @@ import org.lwjgl.util.glu.Sphere;
 import com.blogspot.jabelarminecraft.blocksmith.BlockSmith;
 import com.blogspot.jabelarminecraft.blocksmith.VersionChecker;
 import com.blogspot.jabelarminecraft.blocksmith.entities.EntityPigTest;
-import com.blogspot.jabelarminecraft.blocksmith.models.MyModelLoader;
 import com.blogspot.jabelarminecraft.blocksmith.registries.BlockRegistry;
 import com.blogspot.jabelarminecraft.blocksmith.registries.ItemRegistry;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderItem;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.RenderPig;
+import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.client.registry.RenderingRegistry;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public class ClientProxy extends CommonProxy 
 {
@@ -94,7 +91,7 @@ public class ClientProxy extends CommonProxy
         createSphereCallList();
         
         // register model loader
-        ModelLoaderRegistry.registerLoader(new MyModelLoader());
+//        ModelLoaderRegistry.registerLoader(new MyModelLoader());
 
         // register renderers
         registerEntityRenderers();

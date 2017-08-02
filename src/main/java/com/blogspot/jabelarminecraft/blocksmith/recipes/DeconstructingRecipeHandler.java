@@ -10,6 +10,7 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.item.crafting.ShapedRecipes;
 import net.minecraft.item.crafting.ShapelessRecipes;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
@@ -28,7 +29,7 @@ public final class DeconstructingRecipeHandler
         
     }
     
-    public ItemStack[] getDeconstructResults(ItemStack parItemStack)
+    public NonNullList<ItemStack> getDeconstructResults(ItemStack parItemStack)
     {
         // DEBUG
         System.out.println("Looking for deconstructing a recipe for "+parItemStack.getUnlocalizedName());
@@ -58,25 +59,20 @@ public final class DeconstructingRecipeHandler
         return null;
     }
     
-    public ItemStack[] getCraftingGrid(IRecipe parRecipe)
+    public NonNullList<ItemStack> getCraftingGrid(IRecipe parRecipe)
     {
         // Initialize the result array
-        ItemStack[] resultItemStackArray = new ItemStack[9];
-        for(int j = 0;j<resultItemStackArray.length;j++)
-        {
-            resultItemStackArray[j] = null;
-        }
+        NonNullList<ItemStack> resultItemStackArray = NonNullList.<ItemStack>withSize(10, ItemStack.EMPTY);
         
-        GameRegistry.addShapedRecipe(name, group, output, params);
         if (parRecipe instanceof ShapedRecipes)
         {
             // DEBUG
             System.out.println("getCraftingGrid for shaped recipe");
-            ShapedRecipes shaped = (ShapedRecipes)parRecipe;
+            ShapedRecipes[] shapedIngredients = {(ShapedRecipes)parRecipe);
             int j = 0;
             for(Ingredient ingredient: shaped.getIngredients())
             {
-                resultItemStackArray[j] = ingredient.getMatchingStacks().;
+                resultItemStackArray.set(j, ingredient.getMatchingStacks());
                 j++;
             }
         }

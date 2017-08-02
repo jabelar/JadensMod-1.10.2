@@ -101,7 +101,7 @@ public class ContainerDeconstructor extends Container
             }
             
             ItemStack[] outputItemStackArray = deconstructingRecipeHandler.getDeconstructResults(inputInventory.getStackInSlot(0));
-
+            NonNullList<ItemStack> outputItemStackArray = NonNull
             if (outputItemStackArray == null)
             {
                 resultString = I18n.format("deconstructing.result.impossible");
