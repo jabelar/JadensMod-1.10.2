@@ -18,6 +18,7 @@ import net.minecraft.init.Items;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
+import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemHoe;
@@ -25,10 +26,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.item.ItemTool;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntityLockable;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
@@ -45,13 +46,13 @@ public class TileEntityForge extends TileEntityLockable implements ITickable, IS
     private static final int[] slotsBottom = new int[] {2, 1};
     private static final int[] slotsSides = new int[] {1};
     /** The ItemStacks that hold the items currently being used in the forge */
-    private ItemStack[] forgeItemStacks = new ItemStack[3];
+    private NonNullList<ItemStack> forgeItemStacks = NonNullList.<ItemStack>withSize(4, ItemStack.EMPTY);
     /** The number of ticks that the forge will keep burning */
     private int forgeBurnTime;
     /** The number of ticks that a fresh copy of the currently-burning item would keep the forge burning for */
     private int currentItemBurnTime;
-    private int field_174906_k;
-    private int field_174905_l;
+    private int ticksForgingItemSoFar;
+    private int ticksPerItem;
     private String forgeCustomName;
 
     /**
@@ -60,7 +61,7 @@ public class TileEntityForge extends TileEntityLockable implements ITickable, IS
     @Override
 	public int getSizeInventory()
     {
-        return forgeItemStacks.length;
+        return forgeItemStacks.size();
     }
 
     /**
@@ -69,7 +70,7 @@ public class TileEntityForge extends TileEntityLockable implements ITickable, IS
     @Override
 	public ItemStack getStackInSlot(int index)
     {
-        return forgeItemStacks[index];
+        return forgeItemStacks.get(index);
     }
 
     /**
@@ -79,23 +80,23 @@ public class TileEntityForge extends TileEntityLockable implements ITickable, IS
     @Override
 	public ItemStack decrStackSize(int index, int count)
     {
-        if (forgeItemStacks[index] != null)
+        if (forgeItemStacks.get(index) != ItemStack.EMPTY)
         {
             ItemStack itemstack;
 
-            if (forgeItemStacks[index].stackSize <= count)
+            if (forgeItemStacks.get(index).getCount() <= count)
             {
-                itemstack = forgeItemStacks[index];
-                forgeItemStacks[index] = null;
+                itemstack = forgeItemStacks.get(index);
+                forgeItemStacks.set(index, ItemStack.EMPTY);
                 return itemstack;
             }
             else
             {
-                itemstack = forgeItemStacks[index].splitStack(count);
+                itemstack = forgeItemStacks.get(index).splitStack(count);
 
-                if (forgeItemStacks[index].stackSize == 0)
+                if (forgeItemStacks.get(index).getCount() == 0)
                 {
-                    forgeItemStacks[index] = null;
+                    forgeItemStacks.set(index, ItemStack.EMPTY);
                 }
 
                 return itemstack;
@@ -103,7 +104,7 @@ public class TileEntityForge extends TileEntityLockable implements ITickable, IS
         }
         else
         {
-            return null;
+            return ItemStack.EMPTY;
         }
     }
 
@@ -114,15 +115,15 @@ public class TileEntityForge extends TileEntityLockable implements ITickable, IS
     @Override
 	public ItemStack removeStackFromSlot(int index)
     {
-        if (forgeItemStacks[index] != null)
+        if (forgeItemStacks.get(index) != ItemStack.EMPTY)
         {
-            ItemStack itemstack = forgeItemStacks[index];
-            forgeItemStacks[index] = null;
+            ItemStack itemstack = forgeItemStacks.get(index);
+            forgeItemStacks.set(index, ItemStack.EMPTY);
             return itemstack;
         }
         else
         {
-            return null;
+            return ItemStack.EMPTY;
         }
     }
 
@@ -132,18 +133,18 @@ public class TileEntityForge extends TileEntityLockable implements ITickable, IS
     @Override
 	public void setInventorySlotContents(int index, ItemStack stack)
     {
-        boolean flag = stack != null && stack.isItemEqual(forgeItemStacks[index]) && ItemStack.areItemStackTagsEqual(stack, forgeItemStacks[index]);
-        forgeItemStacks[index] = stack;
+        boolean flag = stack != ItemStack.EMPTY && stack.isItemEqual(forgeItemStacks.get(index)) && ItemStack.areItemStackTagsEqual(stack, forgeItemStacks.get(index));
+        forgeItemStacks.set(index, stack);
 
-        if (stack != null && stack.stackSize > getInventoryStackLimit())
+        if (stack != ItemStack.EMPTY && stack.getCount() > getInventoryStackLimit())
         {
-            stack.stackSize = getInventoryStackLimit();
+            stack.setCount(getInventoryStackLimit());
         }
 
         if (index == 0 && !flag)
         {
-            field_174905_l = func_174904_a(stack);
-            field_174906_k = 0;
+            ticksPerItem = func_174904_a(stack);
+            ticksForgingItemSoFar = 0;
             markDirty();
         }
     }
@@ -175,24 +176,12 @@ public class TileEntityForge extends TileEntityLockable implements ITickable, IS
 	public void readFromNBT(NBTTagCompound compound)
     {
         super.readFromNBT(compound);
-        NBTTagList nbttaglist = compound.getTagList("Items", 10);
-        forgeItemStacks = new ItemStack[getSizeInventory()];
-
-        for (int i = 0; i < nbttaglist.tagCount(); ++i)
-        {
-            NBTTagCompound nbttagcompound1 = nbttaglist.getCompoundTagAt(i);
-            byte b0 = nbttagcompound1.getByte("Slot");
-
-            if (b0 >= 0 && b0 < forgeItemStacks.length)
-            {
-                forgeItemStacks[b0] = ItemStack.loadItemStackFromNBT(nbttagcompound1);
-            }
-        }
-
+        forgeItemStacks = NonNullList.<ItemStack>withSize(getSizeInventory(), ItemStack.EMPTY);
+        ItemStackHelper.loadAllItems(compound, forgeItemStacks);
         forgeBurnTime = compound.getShort("BurnTime");
-        field_174906_k = compound.getShort("CookTime");
-        field_174905_l = compound.getShort("CookTimeTotal");
-        currentItemBurnTime = getItemBurnTime(forgeItemStacks[1]);
+        ticksForgingItemSoFar = compound.getShort("CookTime");
+        ticksPerItem = compound.getShort("CookTimeTotal");
+        currentItemBurnTime = getItemBurnTime(forgeItemStacks.get(1));
 
         if (compound.hasKey("CustomName", 8))
         {
@@ -205,22 +194,9 @@ public class TileEntityForge extends TileEntityLockable implements ITickable, IS
     {
         super.writeToNBT(compound);
         compound.setShort("BurnTime", (short)forgeBurnTime);
-        compound.setShort("CookTime", (short)field_174906_k);
-        compound.setShort("CookTimeTotal", (short)field_174905_l);
-        NBTTagList nbttaglist = new NBTTagList();
-
-        for (int i = 0; i < forgeItemStacks.length; ++i)
-        {
-            if (forgeItemStacks[i] != null)
-            {
-                NBTTagCompound nbttagcompound1 = new NBTTagCompound();
-                nbttagcompound1.setByte("Slot", (byte)i);
-                forgeItemStacks[i].writeToNBT(nbttagcompound1);
-                nbttaglist.appendTag(nbttagcompound1);
-            }
-        }
-
-        compound.setTag("Items", nbttaglist);
+        compound.setShort("CookTime", (short)ticksForgingItemSoFar);
+        compound.setShort("CookTimeTotal", (short)ticksPerItem);
+        ItemStackHelper.saveAllItems(compound, forgeItemStacks);
 
         if (hasCustomName())
         {
@@ -268,32 +244,32 @@ public class TileEntityForge extends TileEntityLockable implements ITickable, IS
             --forgeBurnTime;
         }
 
-        if (!worldObj.isRemote)
+        if (!world.isRemote)
         {
-            if (!isBurning() && (forgeItemStacks[1] == null || forgeItemStacks[0] == null))
+            if (!isBurning() && (forgeItemStacks.get(1) == ItemStack.EMPTY || forgeItemStacks.get(0) == ItemStack.EMPTY))
             {
-                if (!isBurning() && field_174906_k > 0)
+                if (!isBurning() && ticksForgingItemSoFar > 0)
                 {
-                    field_174906_k = MathHelper.clamp_int(field_174906_k - 2, 0, field_174905_l);
+                    ticksForgingItemSoFar = MathHelper.clamp(ticksForgingItemSoFar - 2, 0, ticksPerItem);
                 }
             }
             else
             {
                 if (!isBurning() && canSmelt())
                 {
-                    currentItemBurnTime = forgeBurnTime = getItemBurnTime(forgeItemStacks[1]);
+                    currentItemBurnTime = forgeBurnTime = getItemBurnTime(forgeItemStacks.get(1));
 
                     if (isBurning())
                     {
                         flag1 = true;
 
-                        if (forgeItemStacks[1] != null)
+                        if (forgeItemStacks.get(1) != ItemStack.EMPTY)
                         {
-                            --forgeItemStacks[1].stackSize;
+                            forgeItemStacks.get(1).setCount(forgeItemStacks.get(1).getCount() - 1);
 
-                            if (forgeItemStacks[1].stackSize == 0)
+                            if (forgeItemStacks.get(1).getCount() == 0)
                             {
-                                forgeItemStacks[1] = forgeItemStacks[1].getItem().getContainerItem(forgeItemStacks[1]);
+                                forgeItemStacks.set(1, forgeItemStacks.get(1).getItem().getContainerItem(forgeItemStacks.get(1)));
                             }
                         }
                     }
@@ -301,26 +277,26 @@ public class TileEntityForge extends TileEntityLockable implements ITickable, IS
 
                 if (isBurning() && canSmelt())
                 {
-                    ++field_174906_k;
+                    ++ticksForgingItemSoFar;
 
-                    if (field_174906_k == field_174905_l)
+                    if (ticksForgingItemSoFar == ticksPerItem)
                     {
-                        field_174906_k = 0;
-                        field_174905_l = func_174904_a(forgeItemStacks[0]);
+                        ticksForgingItemSoFar = 0;
+                        ticksPerItem = func_174904_a(forgeItemStacks.get(0));
                         smeltItem();
                         flag1 = true;
                     }
                 }
                 else
                 {
-                    field_174906_k = 0;
+                    ticksForgingItemSoFar = 0;
                 }
             }
 
             if (flag != isBurning())
             {
                 flag1 = true;
-                BlockForge.changeBlockStateContainer(isBurning(), worldObj, pos);
+                BlockForge.changeBlockStateContainer(isBurning(), world, pos);
             }
         }
 
@@ -340,18 +316,18 @@ public class TileEntityForge extends TileEntityLockable implements ITickable, IS
      */
     private boolean canSmelt()
     {
-        if (forgeItemStacks[0] == null)
+        if (forgeItemStacks.get(0) == ItemStack.EMPTY)
         {
             return false;
         }
         else
         {
-            ItemStack itemstack = ForgeRecipes.instance().getSmeltingResult(forgeItemStacks[0]);
-            if (itemstack == null) return false;
-            if (forgeItemStacks[2] == null) return true;
-            if (!forgeItemStacks[2].isItemEqual(itemstack)) return false;
-            int result = forgeItemStacks[2].stackSize + itemstack.stackSize;
-            return result <= getInventoryStackLimit() && result <= forgeItemStacks[2].getMaxStackSize(); //Forge BugFix: Make it respect stack sizes properly.
+            ItemStack itemstack = ForgeRecipes.instance().getSmeltingResult(forgeItemStacks.get(0));
+            if (itemstack == ItemStack.EMPTY) return false;
+            if (forgeItemStacks.get(2) == ItemStack.EMPTY) return true;
+            if (!forgeItemStacks.get(2).isItemEqual(itemstack)) return false;
+            int result = forgeItemStacks.get(2).getCount() + itemstack.getCount();
+            return result <= getInventoryStackLimit() && result <= forgeItemStacks.get(2).getMaxStackSize(); //Forge BugFix: Make it respect stack sizes properly.
         }
     }
 
@@ -362,27 +338,27 @@ public class TileEntityForge extends TileEntityLockable implements ITickable, IS
     {
         if (canSmelt())
         {
-            ItemStack itemstack = ForgeRecipes.instance().getSmeltingResult(forgeItemStacks[0]);
+            ItemStack itemstack = ForgeRecipes.instance().getSmeltingResult(forgeItemStacks.get(0));
 
-            if (forgeItemStacks[2] == null)
+            if (forgeItemStacks.get(2) == ItemStack.EMPTY)
             {
-                forgeItemStacks[2] = itemstack.copy();
+                forgeItemStacks.set(2, itemstack.copy());
             }
-            else if (forgeItemStacks[2].getItem() == itemstack.getItem())
+            else if (forgeItemStacks.get(2).getItem() == itemstack.getItem())
             {
-                forgeItemStacks[2].stackSize += itemstack.stackSize; // Forge BugFix: Results may have multiple items
-            }
-
-            if (forgeItemStacks[0].getItem() == Item.getItemFromBlock(Blocks.SPONGE) && forgeItemStacks[0].getMetadata() == 1 && forgeItemStacks[1] != null && forgeItemStacks[1].getItem() == Items.BUCKET)
-            {
-                forgeItemStacks[1] = new ItemStack(Items.WATER_BUCKET);
+                forgeItemStacks.get(2).setCount(forgeItemStacks.get(2).getCount() + itemstack.getCount()); // Forge BugFix: Results may have multiple items
             }
 
-            --forgeItemStacks[0].stackSize;
-
-            if (forgeItemStacks[0].stackSize <= 0)
+            if (forgeItemStacks.get(0).getItem() == Item.getItemFromBlock(Blocks.SPONGE) && forgeItemStacks.get(0).getMetadata() == 1 && forgeItemStacks.get(1) != ItemStack.EMPTY && forgeItemStacks.get(1).getItem() == Items.BUCKET)
             {
-                forgeItemStacks[0] = null;
+                forgeItemStacks.set(1,  new ItemStack(Items.WATER_BUCKET));
+            }
+
+            forgeItemStacks.get(0).setCount(forgeItemStacks.get(0).getCount() + 1);
+
+            if (forgeItemStacks.get(0).getCount() <= 0)
+            {
+                forgeItemStacks.set(0, ItemStack.EMPTY);
             }
         }
     }
@@ -392,15 +368,15 @@ public class TileEntityForge extends TileEntityLockable implements ITickable, IS
      * fuel
      */
     @SuppressWarnings("deprecation")
-    public static int getItemBurnTime(ItemStack p_145952_0_)
+    public static int getItemBurnTime(ItemStack parItemStack)
     {
-        if (p_145952_0_ == null)
+        if (parItemStack == ItemStack.EMPTY)
         {
             return 0;
         }
         else
         {
-            Item item = p_145952_0_.getItem();
+            Item item = parItemStack.getItem();
 
             if (item instanceof ItemBlock && Block.getBlockFromItem(item) != Blocks.AIR)
             {
@@ -430,7 +406,7 @@ public class TileEntityForge extends TileEntityLockable implements ITickable, IS
             if (item == Items.LAVA_BUCKET) return 20000;
             if (item == Item.getItemFromBlock(Blocks.SAPLING)) return 100;
             if (item == Items.BLAZE_ROD) return 2400;
-            return net.minecraftforge.fml.common.registry.GameRegistry.getFuelValue(p_145952_0_);
+            return net.minecraftforge.fml.common.registry.GameRegistry.getFuelValue(parItemStack);
         }
     }
 
@@ -444,12 +420,19 @@ public class TileEntityForge extends TileEntityLockable implements ITickable, IS
     }
 
     /**
-     * Do not make give this method the name canInteractWith because it clashes with Container
+     * Don't rename this method to canInteractWith due to conflicts with Container
      */
     @Override
-	public boolean isUseableByPlayer(EntityPlayer playerIn)
+	public boolean isUsableByPlayer(EntityPlayer player)
     {
-        return worldObj.getTileEntity(pos) != this ? false : playerIn.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
+        if (world.getTileEntity(pos) != this)
+        {
+            return false;
+        }
+        else
+        {
+            return player.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
+        }
     }
 
     @Override
@@ -525,9 +508,9 @@ public class TileEntityForge extends TileEntityLockable implements ITickable, IS
             case 1:
                 return currentItemBurnTime;
             case 2:
-                return field_174906_k;
+                return ticksForgingItemSoFar;
             case 3:
-                return field_174905_l;
+                return ticksPerItem;
             default:
                 return 0;
         }
@@ -545,10 +528,10 @@ public class TileEntityForge extends TileEntityLockable implements ITickable, IS
                 currentItemBurnTime = value;
                 break;
             case 2:
-                field_174906_k = value;
+                ticksForgingItemSoFar = value;
                 break;
             case 3:
-                field_174905_l = value;
+                ticksPerItem = value;
                 break;
             default:
                 System.out.println("TileEntityForge illegal index "+id+" in setField() method");
@@ -565,9 +548,9 @@ public class TileEntityForge extends TileEntityLockable implements ITickable, IS
     @Override
 	public void clear()
     {
-        for (int i = 0; i < forgeItemStacks.length; ++i)
+        for (int i = 0; i < forgeItemStacks.size(); ++i)
         {
-            forgeItemStacks[i] = null;
+            forgeItemStacks.set(i, ItemStack.EMPTY);
         }
     }
     
@@ -581,4 +564,9 @@ public class TileEntityForge extends TileEntityLockable implements ITickable, IS
 	    return (oldState.getBlock() != newSate.getBlock());
 	}
 
+	@Override
+	public boolean isEmpty() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

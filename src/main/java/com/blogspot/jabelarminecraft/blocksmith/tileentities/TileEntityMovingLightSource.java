@@ -16,22 +16,22 @@
 
 package com.blogspot.jabelarminecraft.blocksmith.tileentities;
 
+import com.blogspot.jabelarminecraft.blocksmith.registries.BlockRegistry;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
-import net.minecraft.server.gui.IUpdatePlayerListBox;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.BlockPos;
+import net.minecraft.util.ITickable;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-
-import com.blogspot.jabelarminecraft.blocksmith.BlockSmith;
 
 /**
  * @author jabelar
  *
  */
-public class TileEntityMovingLightSource extends TileEntity implements IUpdatePlayerListBox
+public class TileEntityMovingLightSource extends TileEntity implements ITickable
 {
     public EntityPlayer thePlayer;
     
@@ -56,19 +56,19 @@ public class TileEntityMovingLightSource extends TileEntity implements IUpdatePl
     public void update()
     {
         // check if player has moved away from the tile entity
-        EntityPlayer thePlayer = worldObj.getClosestPlayer(getPos().getX()+0.5D, getPos().getY()+0.5D, getPos().getZ()+0.5D, 2.0D);
+        EntityPlayer thePlayer = world.getClosestPlayer(getPos().getX()+0.5D, getPos().getY()+0.5D, getPos().getZ()+0.5D, 2.0D, false);
         if (thePlayer == null)
         {
-            if (worldObj.getBlockState(getPos()).getBlock() == BlockSmith.blockMovingLightSource)
+            if (world.getBlockState(getPos()).getBlock() == BlockRegistry.MOVING_LIGHT_SOURCE)
             {
-                worldObj.setBlockToAir(getPos());
+                world.setBlockToAir(getPos());
             }
         }
-        else if (thePlayer.getCurrentEquippedItem().getItem() != Item.getItemFromBlock(Blocks.torch))
+        else if (thePlayer.getActiveItemStack().getItem() != Item.getItemFromBlock(Blocks.TORCH))
         {
-            if (worldObj.getBlockState(getPos()).getBlock() == BlockSmith.blockMovingLightSource)
+            if (world.getBlockState(getPos()).getBlock() == BlockRegistry.MOVING_LIGHT_SOURCE)
             {
-                worldObj.setBlockToAir(getPos());
+                world.setBlockToAir(getPos());
             }            
         }
     }  

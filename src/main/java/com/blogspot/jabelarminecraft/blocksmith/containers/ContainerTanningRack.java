@@ -16,19 +16,19 @@
 
 package com.blogspot.jabelarminecraft.blocksmith.containers;
 
+import com.blogspot.jabelarminecraft.blocksmith.recipes.TanningRackRecipes;
+import com.blogspot.jabelarminecraft.blocksmith.slots.SlotTanningRackOutput;
+import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityTanningRack;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ICrafting;
+import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.blogspot.jabelarminecraft.blocksmith.recipes.TanningRackRecipes;
-import com.blogspot.jabelarminecraft.blocksmith.slots.SlotTanningRackOutput;
-import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityTanningRack;
 
 /**
  * @author jabelar
@@ -74,10 +74,10 @@ public class ContainerTanningRack extends Container
      * Add the given Listener to the list of Listeners. Method name is for legacy.
      */
     @Override
-	public void onCraftGuiOpened(ICrafting listener)
+	public void addListener(IContainerListener listener)
     {
-        super.onCraftGuiOpened(listener);
-        listener.func_175173_a(this, tileTanningRack);
+        super.addListener(listener);
+        listener.sendAllWindowProperties(this, tileTanningRack);
     }
 
     /**
@@ -88,23 +88,23 @@ public class ContainerTanningRack extends Container
     {
         super.detectAndSendChanges();
 
-        for (int i = 0; i < crafters.size(); ++i)
+        for (int i = 0; i < listeners.size(); ++i)
         {
-            ICrafting icrafting = (ICrafting)crafters.get(i);
+            IContainerListener icrafting = listeners.get(i);
 
             if (ticksTanningItemSoFar != tileTanningRack.getField(2))
             {
-                icrafting.sendProgressBarUpdate(this, 2, tileTanningRack.getField(2));
+                icrafting.sendWindowProperty(this, 2, tileTanningRack.getField(2));
             }
 
             if (timeCanGrind != tileTanningRack.getField(0))
             {
-                icrafting.sendProgressBarUpdate(this, 0, tileTanningRack.getField(0));
+                icrafting.sendWindowProperty(this, 0, tileTanningRack.getField(0));
             }
 
             if (ticksPerItem != tileTanningRack.getField(3))
             {
-                icrafting.sendProgressBarUpdate(this, 3, tileTanningRack.getField(3));
+                icrafting.sendWindowProperty(this, 3, tileTanningRack.getField(3));
             }
         }
 
@@ -123,7 +123,7 @@ public class ContainerTanningRack extends Container
     @Override
 	public boolean canInteractWith(EntityPlayer playerIn)
     {
-        return tileTanningRack.isUseableByPlayer(playerIn);
+        return tileTanningRack.isUsableByPlayer(playerIn);
     }
 
     /**
@@ -133,7 +133,7 @@ public class ContainerTanningRack extends Container
 	public ItemStack transferStackInSlot(EntityPlayer playerIn, int slotIndex)
     {
         ItemStack itemStack1 = null;
-        Slot slot = (Slot)inventorySlots.get(slotIndex);
+        Slot slot = inventorySlots.get(slotIndex);
 
         if (slot != null && slot.getHasStack())
         {
@@ -176,7 +176,7 @@ public class ContainerTanningRack extends Container
                 return null;
             }
 
-            if (itemStack2.stackSize == 0)
+            if (itemStack2.getCount() == 0)
             {
                 slot.putStack((ItemStack)null);
             }
@@ -185,12 +185,12 @@ public class ContainerTanningRack extends Container
                 slot.onSlotChanged();
             }
 
-            if (itemStack2.stackSize == itemStack1.stackSize)
+            if (itemStack2.getCount() == itemStack1.getCount())
             {
                 return null;
             }
 
-            slot.onPickupFromSlot(playerIn, itemStack2);
+            slot.onTake(playerIn, itemStack2);
         }
 
         return itemStack1;

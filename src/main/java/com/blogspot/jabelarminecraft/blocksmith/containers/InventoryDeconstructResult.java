@@ -3,7 +3,7 @@ package com.blogspot.jabelarminecraft.blocksmith.containers;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.IChatComponent;
+import net.minecraft.util.text.ITextComponent;
 
 public class InventoryDeconstructResult implements IInventory
 {
@@ -52,7 +52,7 @@ public class InventoryDeconstructResult implements IInventory
      * GUI.
      */
     @Override
-	public ItemStack getStackInSlotOnClosing(int par1)
+	public ItemStack removeStackFromSlot(int par1)
     {
         if(stackResult[par1] != null)
         {
@@ -87,7 +87,7 @@ public class InventoryDeconstructResult implements IInventory
     }
 
     @Override
-	public boolean isUseableByPlayer(EntityPlayer par1EntityPlayer)
+	public boolean isUsableByPlayer(EntityPlayer par1EntityPlayer)
     {
         return true;
     }
@@ -98,7 +98,8 @@ public class InventoryDeconstructResult implements IInventory
         return true;
     }
 
-    public boolean isEmpty()
+    @Override
+	public boolean isEmpty()
     {
         for(int i = 0; i < stackResult.length; i++ )
         {
@@ -115,7 +116,7 @@ public class InventoryDeconstructResult implements IInventory
     }
 
     @Override
-	public String getCommandSenderName()
+	public String getName()
     {
         return "DeconstructResult";
     }
@@ -127,7 +128,7 @@ public class InventoryDeconstructResult implements IInventory
     }
 
     @Override
-    public IChatComponent getDisplayName()
+    public ITextComponent getDisplayName()
     {
         return null;
     }
@@ -171,5 +172,4 @@ public class InventoryDeconstructResult implements IInventory
         for(int i = 0;i<stackResult.length;i++)
             stackResult[i] = null;
     }
-   
 }

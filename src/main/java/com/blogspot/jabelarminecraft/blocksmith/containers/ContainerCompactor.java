@@ -16,6 +16,10 @@
 
 package com.blogspot.jabelarminecraft.blocksmith.containers;
 
+import com.blogspot.jabelarminecraft.blocksmith.recipes.CompactorRecipes;
+import com.blogspot.jabelarminecraft.blocksmith.slots.SlotCompactorOutput;
+import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityCompactor;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -23,13 +27,8 @@ import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.blogspot.jabelarminecraft.blocksmith.recipes.CompactorRecipes;
-import com.blogspot.jabelarminecraft.blocksmith.slots.SlotCompactorOutput;
-import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityCompactor;
 
 /**
  * @author jabelar
@@ -75,7 +74,6 @@ public class ContainerCompactor extends Container
      * Add the given Listener to the list of Listeners. Method name is for legacy.
      */
     @Override
-
     public void addListener(IContainerListener listener)
     {
         super.addListener(listener);
@@ -135,7 +133,7 @@ public class ContainerCompactor extends Container
 	public ItemStack transferStackInSlot(EntityPlayer playerIn, int slotIndex)
     {
         ItemStack itemStack1 = null;
-        Slot slot = (Slot)inventorySlots.get(slotIndex);
+        Slot slot = inventorySlots.get(slotIndex);
 
         if (slot != null && slot.getHasStack())
         {

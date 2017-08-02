@@ -16,7 +16,11 @@
 
 package com.blogspot.jabelarminecraft.blocksmith.tileentities;
 
-import net.minecraft.block.state.IBlockState;
+import com.blogspot.jabelarminecraft.blocksmith.blocks.BlockTanningRack;
+import com.blogspot.jabelarminecraft.blocksmith.containers.ContainerTanningRack;
+import com.blogspot.jabelarminecraft.blocksmith.recipes.TanningRackRecipes;
+import com.blogspot.jabelarminecraft.blocksmith.registries.ItemRegistry;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.Items;
@@ -27,19 +31,12 @@ import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntityLockable;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
-import net.minecraft.world.World;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.blogspot.jabelarminecraft.blocksmith.BlockSmith;
-import com.blogspot.jabelarminecraft.blocksmith.blocks.BlockTanningRack;
-import com.blogspot.jabelarminecraft.blocksmith.containers.ContainerTanningRack;
-import com.blogspot.jabelarminecraft.blocksmith.recipes.TanningRackRecipes;
 
 /**
  * @author jabelar
@@ -56,7 +53,8 @@ public class TileEntityTanningRack extends TileEntityLockable implements ITickab
     private static final int[] slotsBottom = new int[] {slotEnum.OUTPUT_SLOT.ordinal()};
     private static final int[] slotsSides = new int[] {};
     /** The ItemStacks that hold the items currently being used in the tanningRack */
-    private ItemStack[] tanningRackItemStackArray = new ItemStack[2];
+//    private ItemStack[] tanningRackItemStackArray = new ItemStack[2];
+    private NonNullList<ItemStack> tanningRackItemStacks = NonNullList.<ItemStack>withSize(3, ItemStack.EMPTY);
     /** The number of ticks that the tanningRack will keep tanning */
     private int timeCanGrind;
     /** The number of ticks that a fresh copy of the currently-tanning item would keep the tanningRack tanning for */
@@ -64,24 +62,14 @@ public class TileEntityTanningRack extends TileEntityLockable implements ITickab
     private int ticksTanningItemSoFar;
     private int ticksPerItem;
     private String tanningRackCustomName;
-
-    /**
-     * This controls whether the tile entity gets replaced whenever the block state is changed.
-     * Normally only want this when block actually is replaced.
-     */
-	@Override
-	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate)
-	{
-	    return (oldState.getBlock() != newSate.getBlock());
-	}
-    
+   
     /**
      * Returns the number of slots in the inventory.
      */
     @Override
 	public int getSizeInventory()
     {
-        return tanningRackItemStackArray.length;
+        return tanningRackItemStacks.size();
     }
 
     /**
@@ -90,71 +78,46 @@ public class TileEntityTanningRack extends TileEntityLockable implements ITickab
     @Override
 	public ItemStack getStackInSlot(int index)
     {
-        return tanningRackItemStackArray[index];
+        return tanningRackItemStacks.get(index);
     }
 
     /**
-     * Removes from an inventory slot (first arg) up to a specified number (second arg) of items and returns them in a
-     * new stack.
+     * Removes up to a specified number of items from an inventory slot and returns them in a new stack.
      */
     @Override
 	public ItemStack decrStackSize(int index, int count)
     {
-        if (tanningRackItemStackArray[index] != null)
-        {
-            ItemStack itemstack;
-
-            if (tanningRackItemStackArray[index].getCount() <= count)
-            {
-                itemstack = tanningRackItemStackArray[index];
-                tanningRackItemStackArray[index] = null;
-                return itemstack;
-            }
-            else
-            {
-                itemstack = tanningRackItemStackArray[index].splitStack(count);
-
-                if (tanningRackItemStackArray[index].getCount() == 0)
-                {
-                    tanningRackItemStackArray[index] = null;
-                }
-
-                return itemstack;
-            }
-        }
-        else
-        {
-            return null;
-        }
+        return ItemStackHelper.getAndSplit(tanningRackItemStacks, index, count);
     }
     
     /**
      * Removes a stack from the given slot and returns it.
      */
-    public ItemStack removeStackFromSlot(int index)
-    {
-        return ItemStackHelper.getAndRemove(this.furnaceItemStacks, index);
-    }
-
-
-    /**
-     * When some containers are closed they call this on each slot, then drop whatever it returns as an EntityItem -
-     * like when you close a workbench GUI.
-     */
     @Override
-	public ItemStack getStackInSlotOnClosing(int index)
+	public ItemStack removeStackFromSlot(int index)
     {
-        if (tanningRackItemStackArray[index] != null)
-        {
-            ItemStack itemstack = tanningRackItemStackArray[index];
-            tanningRackItemStackArray[index] = null;
-            return itemstack;
-        }
-        else
-        {
-            return null;
-        }
+        return ItemStackHelper.getAndRemove(tanningRackItemStacks, index);
     }
+
+
+//    /**
+//     * When some containers are closed they call this on each slot, then drop whatever it returns as an EntityItem -
+//     * like when you close a workbench GUI.
+//     */
+//    @Override
+//	public ItemStack getStackInSlotOnClosing(int index)
+//    {
+//        if (tanningRackItemStacks[index] != null)
+//        {
+//            ItemStack itemstack = tanningRackItemStacks[index];
+//            tanningRackItemStacks[index] = null;
+//            return itemstack;
+//        }
+//        else
+//        {
+//            return null;
+//        }
+//    }
 
     /**
      * Sets the given item stack to the specified slot in the inventory (can be crafting or armor sections).
@@ -165,28 +128,25 @@ public class TileEntityTanningRack extends TileEntityLockable implements ITickab
     	// DEBUG
     	System.out.println("TileEntityTanningRack setInventorySlotContents()");
     	
-        boolean isSameItemStackAlreadyInSlot = stack != null && stack.isItemEqual(tanningRackItemStackArray[index]) && ItemStack.areItemStackTagsEqual(stack, tanningRackItemStackArray[index]);
-        tanningRackItemStackArray[index] = stack;
+        boolean isSameItemStackAlreadyInSlot = stack != null && stack.isItemEqual(tanningRackItemStacks.get(index)) && ItemStack.areItemStackTagsEqual(stack, tanningRackItemStacks.get(index));
+        tanningRackItemStacks.set(index, stack);
 
-        if (stack != null && stack.stackSize > getInventoryStackLimit())
+        if (stack != null && stack.getCount() > getInventoryStackLimit())
         {
-            stack.stackSize = getInventoryStackLimit();
+            stack.setCount(getInventoryStackLimit());
         }
 
         // if input slot, reset the tanning timers
         if (index == slotEnum.INPUT_SLOT.ordinal() && !isSameItemStackAlreadyInSlot)
         {
-            ticksPerItem = timeToGrindOneItem(stack);
+            ticksPerItem = timeToTanOneItem(stack);
             ticksTanningItemSoFar = 0;
             markDirty();
         }
     }
 
-    /**
-     * Gets the name of this command sender (usually username, but possibly "Rcon")
-     */
     @Override
-	public String getCommandSenderName()
+	public String getName()
     {
         return hasCustomName() ? tanningRackCustomName : "container.tanningRack";
     }
@@ -199,7 +159,7 @@ public class TileEntityTanningRack extends TileEntityLockable implements ITickab
     {
         return tanningRackCustomName != null && tanningRackCustomName.length() > 0;
     }
-
+    
     public void setCustomInventoryName(String parCustomName)
     {
         tanningRackCustomName = parCustomName;
@@ -209,20 +169,8 @@ public class TileEntityTanningRack extends TileEntityLockable implements ITickab
 	public void readFromNBT(NBTTagCompound compound)
     {
         super.readFromNBT(compound);
-        NBTTagList nbttaglist = compound.getTagList("Items", 10);
-        tanningRackItemStackArray = new ItemStack[getSizeInventory()];
-
-        for (int i = 0; i < nbttaglist.tagCount(); ++i)
-        {
-            NBTTagCompound nbtTagCompound = nbttaglist.getCompoundTagAt(i);
-            byte b0 = nbtTagCompound.getByte("Slot");
-
-            if (b0 >= 0 && b0 < tanningRackItemStackArray.length)
-            {
-                tanningRackItemStackArray[b0] = ItemStack.loadItemStackFromNBT(nbtTagCompound);
-            }
-        }
-
+        tanningRackItemStacks = NonNullList.<ItemStack>withSize(getSizeInventory(), ItemStack.EMPTY);
+        ItemStackHelper.loadAllItems(compound, tanningRackItemStacks);
         timeCanGrind = compound.getShort("GrindTime");
         ticksTanningItemSoFar = compound.getShort("CookTime");
         ticksPerItem = compound.getShort("CookTimeTotal");
@@ -234,31 +182,20 @@ public class TileEntityTanningRack extends TileEntityLockable implements ITickab
     }
 
     @Override
-	public void writeToNBT(NBTTagCompound compound)
+	public NBTTagCompound writeToNBT(NBTTagCompound compound)
     {
         super.writeToNBT(compound);
         compound.setShort("GrindTime", (short)timeCanGrind);
         compound.setShort("CookTime", (short)ticksTanningItemSoFar);
         compound.setShort("CookTimeTotal", (short)ticksPerItem);
-        NBTTagList nbttaglist = new NBTTagList();
-
-        for (int i = 0; i < tanningRackItemStackArray.length; ++i)
-        {
-            if (tanningRackItemStackArray[i] != null)
-            {
-                NBTTagCompound nbtTagCompound = new NBTTagCompound();
-                nbtTagCompound.setByte("Slot", (byte)i);
-                tanningRackItemStackArray[i].writeToNBT(nbtTagCompound);
-                nbttaglist.appendTag(nbtTagCompound);
-            }
-        }
-
-        compound.setTag("Items", nbttaglist);
+        ItemStackHelper.saveAllItems(compound, tanningRackItemStacks);
 
         if (hasCustomName())
         {
             compound.setString("CustomName", tanningRackCustomName);
         }
+        
+        return compound;
     }
 
     /**
@@ -274,50 +211,50 @@ public class TileEntityTanningRack extends TileEntityLockable implements ITickab
     /**
      * TanningRack is tanning
      */
-    public boolean tanningSomething()
+    public boolean isTanning()
     {
         return true;
     }
 
     // this function indicates whether container texture should be drawn
     @SideOnly(Side.CLIENT)
-    public static boolean func_174903_a(IInventory parIInventory)
+    public static boolean isTanning(IInventory inventory)
     {
-        return true ; // parIInventory.getField(0) > 0;
+        return inventory.getField(0) > 0;
     }
 
     @Override
 	public void update()
     {
-        boolean hasBeenTanning = tanningSomething();
+        boolean hasBeenTanning = isTanning();
         boolean changedTanningState = false;
 
-        if (tanningSomething())
+        if (isTanning())
         {
             --timeCanGrind;
         }
 
-        if (!worldObj.isRemote)
+        if (!world.isRemote)
         {
         	// if something in input slot
-            if (tanningRackItemStackArray[slotEnum.INPUT_SLOT.ordinal()] != null)
+            if (!tanningRackItemStacks.get(0).isEmpty())
             {            	
              	// start tanning
-                if (!tanningSomething() && canGrind())
+                if (!isTanning() && canTan())
                 {
 	            	// DEBUG
 	            	System.out.println("TileEntityTanningRack update() started tanning");
 	            	
 	                timeCanGrind = 150;
 	
-	                 if (tanningSomething())
+	                 if (isTanning())
 	                 {
 	                     changedTanningState = true;
 	                 }
                 }
 
                 // continue tanning
-                if (tanningSomething() && canGrind())
+                if (isTanning() && canTan())
                 {
 //	            	// DEBUG
 //	            	System.out.println("TileEntityTanningRack update() continuing tanning");
@@ -331,7 +268,7 @@ public class TileEntityTanningRack extends TileEntityLockable implements ITickab
                     	System.out.println("Tanning completed another output cycle");
                     	
                         ticksTanningItemSoFar = 0;
-                        ticksPerItem = timeToGrindOneItem(tanningRackItemStackArray[0]);
+                        ticksPerItem = timeToTanOneItem(tanningRackItemStacks.get(0));
                         tanItem();
                         changedTanningState = true;
                     }
@@ -343,7 +280,7 @@ public class TileEntityTanningRack extends TileEntityLockable implements ITickab
             }
 
             // started or stopped tanning, update block to change to active or inactive model
-            if (hasBeenTanning != tanningSomething()) // the isTanning() value may have changed due to call to tanItem() earlier
+            if (hasBeenTanning != isTanning()) // the isTanning() value may have changed due to call to tanItem() earlier
             {
             	// DEBUG
             	System.out.println("Changed tanning state");
@@ -351,40 +288,40 @@ public class TileEntityTanningRack extends TileEntityLockable implements ITickab
             }
             
             // if leather result is in output slot display it
-            if (tanningRackItemStackArray[slotEnum.OUTPUT_SLOT.ordinal()] != null)
+            if (tanningRackItemStacks.get(slotEnum.INPUT_SLOT.ordinal()) != null)
             {
-                 BlockTanningRack.changeBlockBasedOnTanningStatus(6, worldObj, pos);
+                 BlockTanningRack.changeBlockBasedOnTanningStatus(6, world, pos);
             }
             else // display what is in input slot
             {
-            	if (tanningRackItemStackArray[slotEnum.INPUT_SLOT.ordinal()] != null)
+            	if (tanningRackItemStacks.get(slotEnum.INPUT_SLOT.ordinal()) != null)
 	            {
-            		Item inputItem = tanningRackItemStackArray[slotEnum.INPUT_SLOT.ordinal()].getItem();
+            		Item inputItem = tanningRackItemStacks.get(slotEnum.INPUT_SLOT.ordinal()).getItem();
             		
-	            	if (inputItem == BlockSmith.cowHide)
+	            	if (inputItem == ItemRegistry.COW_HIDE)
 	            	{
-	                	BlockTanningRack.changeBlockBasedOnTanningStatus(1, worldObj, pos);
+	                	BlockTanningRack.changeBlockBasedOnTanningStatus(1, world, pos);
 	            	}
-	            	else if (inputItem == BlockSmith.sheepSkin)
+	            	else if (inputItem == ItemRegistry.SHEEP_SKIN)
 	            	{
-	                	BlockTanningRack.changeBlockBasedOnTanningStatus(2, worldObj, pos);
+	                	BlockTanningRack.changeBlockBasedOnTanningStatus(2, world, pos);
 	            	}
-	            	else if (inputItem == BlockSmith.pigSkin)
+	            	else if (inputItem == ItemRegistry.PIG_SKIN)
 	            	{
-	                	BlockTanningRack.changeBlockBasedOnTanningStatus(3, worldObj, pos);
+	                	BlockTanningRack.changeBlockBasedOnTanningStatus(3, world, pos);
 	            	}
-	            	else if (inputItem == BlockSmith.horseHide)
+	            	else if (inputItem == ItemRegistry.HORSE_HIDE)
 	            	{
-	                	BlockTanningRack.changeBlockBasedOnTanningStatus(4, worldObj, pos);
+	                	BlockTanningRack.changeBlockBasedOnTanningStatus(4, world, pos);
 	            	}
-	            	else if (inputItem == Items.rabbit_hide)
+	            	else if (inputItem == Items.RABBIT_HIDE)
 	            	{
-	                	BlockTanningRack.changeBlockBasedOnTanningStatus(5, worldObj, pos);
+	                	BlockTanningRack.changeBlockBasedOnTanningStatus(5, world, pos);
 	            	}
             	}
             	else
             	{
-                	BlockTanningRack.changeBlockBasedOnTanningStatus(0, worldObj, pos);
+                	BlockTanningRack.changeBlockBasedOnTanningStatus(0, world, pos);
             	}
             }
         }
@@ -395,7 +332,7 @@ public class TileEntityTanningRack extends TileEntityLockable implements ITickab
         }
     }
 
-    public int timeToGrindOneItem(ItemStack parItemStack)
+    public int timeToTanOneItem(ItemStack parItemStack)
     {
         return 200;
     }
@@ -403,22 +340,22 @@ public class TileEntityTanningRack extends TileEntityLockable implements ITickab
     /**
      * Returns true if the tanningRack can tan an item, i.e. has a source item, destination stack isn't full, etc.
      */
-    private boolean canGrind()
+    private boolean canTan()
     {
     	// if nothing in input slot
-        if (tanningRackItemStackArray[slotEnum.INPUT_SLOT.ordinal()] == null)
+        if (tanningRackItemStacks.get(slotEnum.INPUT_SLOT.ordinal()) == null)
         {
             return false;
         }
         else // check if it has a tanning recipe
         {
-            ItemStack itemStackToOutput = TanningRackRecipes.instance().getTanningResult(tanningRackItemStackArray[slotEnum.INPUT_SLOT.ordinal()]);
+            ItemStack itemStackToOutput = TanningRackRecipes.instance().getTanningResult(tanningRackItemStacks.get(slotEnum.INPUT_SLOT.ordinal()));
             if (itemStackToOutput == null) return false; // no valid recipe for tanning this item
-            if (tanningRackItemStackArray[slotEnum.OUTPUT_SLOT.ordinal()] == null) return true; // output slot is empty
-            if (!tanningRackItemStackArray[slotEnum.OUTPUT_SLOT.ordinal()].isItemEqual(itemStackToOutput)) return false; // output slot has different item occupying it
+            if (tanningRackItemStacks.get(slotEnum.OUTPUT_SLOT.ordinal()) == null) return true; // output slot is empty
+            if (!tanningRackItemStacks.get(slotEnum.OUTPUT_SLOT.ordinal()).isItemEqual(itemStackToOutput)) return false; // output slot has different item occupying it
             // check if output slot is full
-            int result = tanningRackItemStackArray[slotEnum.OUTPUT_SLOT.ordinal()].stackSize + itemStackToOutput.stackSize;
-            return result <= getInventoryStackLimit() && result <= tanningRackItemStackArray[slotEnum.OUTPUT_SLOT.ordinal()].getMaxStackSize();
+            int result = tanningRackItemStacks.get(slotEnum.OUTPUT_SLOT.ordinal()).getCount() + itemStackToOutput.getCount();
+            return result <= getInventoryStackLimit() && result <= tanningRackItemStacks.get(slotEnum.OUTPUT_SLOT.ordinal()).getMaxStackSize();
         }
     }
 
@@ -427,36 +364,43 @@ public class TileEntityTanningRack extends TileEntityLockable implements ITickab
      */
     public void tanItem()
     {
-        if (canGrind())
+        if (canTan())
         {
-            ItemStack itemstack = TanningRackRecipes.instance().getTanningResult(tanningRackItemStackArray[slotEnum.INPUT_SLOT.ordinal()]);
+            ItemStack itemstack = TanningRackRecipes.instance().getTanningResult(tanningRackItemStacks.get(slotEnum.INPUT_SLOT.ordinal()));
 
             // check if output slot is empty
-            if (tanningRackItemStackArray[slotEnum.OUTPUT_SLOT.ordinal()] == null)
+            if (tanningRackItemStacks.get(slotEnum.OUTPUT_SLOT.ordinal()) == null)
             {
-                tanningRackItemStackArray[slotEnum.OUTPUT_SLOT.ordinal()] = itemstack.copy();
+                tanningRackItemStacks.set(slotEnum.OUTPUT_SLOT.ordinal(), itemstack.copy());
             }
-            else if (tanningRackItemStackArray[slotEnum.OUTPUT_SLOT.ordinal()].getItem() == itemstack.getItem())
+            else if (tanningRackItemStacks.get(slotEnum.OUTPUT_SLOT.ordinal()).getItem() == itemstack.getItem())
             {
-                tanningRackItemStackArray[slotEnum.OUTPUT_SLOT.ordinal()].stackSize += itemstack.stackSize; // Forge BugFix: Results may have multiple items
+                tanningRackItemStacks.get(slotEnum.OUTPUT_SLOT.ordinal()).setCount(tanningRackItemStacks.get(slotEnum.OUTPUT_SLOT.ordinal()).getCount() + itemstack.getCount()); // Forge BugFix: Results may have multiple items
             }
 
-            --tanningRackItemStackArray[slotEnum.INPUT_SLOT.ordinal()].stackSize;
+            tanningRackItemStacks.get(slotEnum.INPUT_SLOT.ordinal()).setCount(tanningRackItemStacks.get(slotEnum.INPUT_SLOT.ordinal()).getCount() - 1);
 
-            if (tanningRackItemStackArray[slotEnum.INPUT_SLOT.ordinal()].stackSize <= 0)
+            if (tanningRackItemStacks.get(slotEnum.INPUT_SLOT.ordinal()).getCount() <= 0)
             {
-                tanningRackItemStackArray[slotEnum.INPUT_SLOT.ordinal()] = null;
+                tanningRackItemStacks.set(slotEnum.INPUT_SLOT.ordinal(), ItemStack.EMPTY);
             }
         }
     }
 
     /**
-     * Do not make give this method the name canInteractWith because it clashes with Container
+     * Don't rename this method to canInteractWith due to conflicts with Container
      */
     @Override
-	public boolean isUseableByPlayer(EntityPlayer playerIn)
+	public boolean isUsableByPlayer(EntityPlayer player)
     {
-        return worldObj.getTileEntity(pos) != this ? false : playerIn.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
+        if (world.getTileEntity(pos) != this)
+        {
+            return false;
+        }
+        else
+        {
+            return player.getDistanceSq(pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D) <= 64.0D;
+        }
     }
 
     @Override
@@ -560,33 +504,23 @@ public class TileEntityTanningRack extends TileEntityLockable implements ITickab
     @Override
 	public void clear()
     {
-        for (int i = 0; i < tanningRackItemStackArray.length; ++i)
+        for (int i = 0; i < tanningRackItemStacks.size(); ++i)
         {
-            tanningRackItemStackArray[i] = null;
+            tanningRackItemStacks.set(i, ItemStack.EMPTY);
         }
     }
 
 	@Override
-	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
-	}
+    public boolean isEmpty()
+    {
+        for (ItemStack itemstack : this.tanningRackItemStacks)
+        {
+            if (!itemstack.isEmpty())
+            {
+                return false;
+            }
+        }
 
-	@Override
-	public ItemStack removeStackFromSlot(int index) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean isUsableByPlayer(EntityPlayer player) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+        return true;
+    }
 }

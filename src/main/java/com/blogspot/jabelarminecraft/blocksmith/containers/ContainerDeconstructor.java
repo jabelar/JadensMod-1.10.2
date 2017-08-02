@@ -1,19 +1,20 @@
 package com.blogspot.jabelarminecraft.blocksmith.containers;
 
+import com.blogspot.jabelarminecraft.blocksmith.BlockSmith;
+import com.blogspot.jabelarminecraft.blocksmith.recipes.DeconstructingInputQuantity;
+import com.blogspot.jabelarminecraft.blocksmith.recipes.DeconstructingRecipeHandler;
+
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-
-import com.blogspot.jabelarminecraft.blocksmith.BlockSmith;
-import com.blogspot.jabelarminecraft.blocksmith.recipes.DeconstructingInputQuantity;
-import com.blogspot.jabelarminecraft.blocksmith.recipes.DeconstructingRecipeHandler;
 
 public class ContainerDeconstructor extends Container
 {
@@ -85,9 +86,9 @@ public class ContainerDeconstructor extends Container
             // DEBUG
             System.out.println("Amount required = "+amountRequired);
 
-            if(amountRequired > inputInventory.getStackInSlot(0).stackSize)
+            if(amountRequired > inputInventory.getStackInSlot(0).getCount())
             {
-                resultString = I18n.format("deconstructing.result.needMoreStacks", (amountRequired - inputInventory.getStackInSlot(0).stackSize));
+                resultString = I18n.format("deconstructing.result.needMoreStacks", (amountRequired - inputInventory.getStackInSlot(0).getCount()));
                 deconstructingState = State.ERROR;
                 return;
             }
@@ -109,7 +110,7 @@ public class ContainerDeconstructor extends Container
             }
            
             // Loop while there is something in the input slot with sufficient amount
-            while(inputInventory.getStackInSlot(0) != null && amountRequired > 0 && amountRequired <= inputInventory.getStackInSlot(0).stackSize)
+            while(inputInventory.getStackInSlot(0) != null && amountRequired > 0 && amountRequired <= inputInventory.getStackInSlot(0).getCount())
             {                              
                 if(!outputInventory.isEmpty())
                 {
@@ -148,9 +149,9 @@ public class ContainerDeconstructor extends Container
                             metadata = 0;
                         }
                         ItemStack newStack = null;
-                        if(currentStack != null && 1 + currentStack.stackSize <= outputItemStack.getMaxStackSize())
+                        if(currentStack != null && 1 + currentStack.getCount() <= outputItemStack.getMaxStackSize())
                         {
-                            newStack = new ItemStack(outputItemStack.getItem(), 1 + currentStack.stackSize, metadata);
+                            newStack = new ItemStack(outputItemStack.getItem(), 1 + currentStack.getCount(), metadata);
                         }
                         else
                         {
@@ -168,7 +169,7 @@ public class ContainerDeconstructor extends Container
                 }
 
                 playerInventory.player.addStat(BlockSmith.deconstructedItemsStat, amountRequired);
-                playerInventory.player.triggerAchievement(BlockSmith.deconstructAny);
+//                playerInventory.player.triggerAchievement(BlockSmith.deconstructAny);
                 
                 inputInventory.decrStackSize(0, amountRequired);
             }
@@ -181,14 +182,14 @@ public class ContainerDeconstructor extends Container
     }
 
     @Override
-	public ItemStack slotClick(int parSlotId, int parMouseButtonId, int parClickMode, EntityPlayer parPlayer)
+	public ItemStack slotClick(int parSlotId, int parMouseButtonId, ClickType parClickMode, EntityPlayer parPlayer)
     {
         ItemStack clickItemStack = super.slotClick(parSlotId, parMouseButtonId, parClickMode, parPlayer);
         if(inventorySlots.size() > parSlotId && parSlotId >= 0)
         {
             if(inventorySlots.get(parSlotId) != null)
             {
-            	if(((Slot) inventorySlots.get(parSlotId)).inventory == inputInventory)
+            	if(inventorySlots.get(parSlotId).inventory == inputInventory)
                 {
                     onCraftMatrixChanged(inputInventory);
                 }
@@ -209,7 +210,7 @@ public class ContainerDeconstructor extends Container
         }
         if(!worldObj.isRemote)
         {
-            ItemStack itemStack = inputInventory.getStackInSlotOnClosing(0);
+            ItemStack itemStack = inputInventory.removeStackFromSlot(0);
             if(itemStack != null)
             {
                 parPlayer.entityDropItem(itemStack, 0.5f);
@@ -217,7 +218,7 @@ public class ContainerDeconstructor extends Container
 
             for(int i = 0; i < outputInventory.getSizeInventory(); i++ )
             {
-                itemStack = outputInventory.getStackInSlotOnClosing(i);
+                itemStack = outputInventory.removeStackFromSlot(i);
 
                 if(itemStack != null)
                 {
@@ -241,7 +242,7 @@ public class ContainerDeconstructor extends Container
     {
 //    	// DEBUG
 //    	System.out.println("Shift-clicked on a slot");
-        Slot slot = (Slot) inventorySlots.get(parSlotIndex);
+        Slot slot = inventorySlots.get(parSlotIndex);
         // If there is something in the stack to pick up
         if (slot != null && slot.getHasStack())
         {
@@ -262,9 +263,9 @@ public class ContainerDeconstructor extends Container
             	// DEBUG
             	System.out.println("Shift-clicked on player inventory slot");
             	// Try to transfer to input slot
-            	if (!((Slot)inventorySlots.get(inputSlotNumber)).getHasStack())
+            	if (!inventorySlots.get(inputSlotNumber).getHasStack())
             	{
-            		((Slot)inventorySlots.get(inputSlotNumber)).putStack(slot.getStack());
+            		inventorySlots.get(inputSlotNumber).putStack(slot.getStack());
                     slot.putStack(null);
                     slot.onSlotChanged();
             	}

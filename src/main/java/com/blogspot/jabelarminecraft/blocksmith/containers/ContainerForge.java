@@ -3,20 +3,20 @@
  */
 package com.blogspot.jabelarminecraft.blocksmith.containers;
 
+import com.blogspot.jabelarminecraft.blocksmith.recipes.ForgeRecipes;
+import com.blogspot.jabelarminecraft.blocksmith.slots.SlotForgeFuel;
+import com.blogspot.jabelarminecraft.blocksmith.slots.SlotForgeOutput;
+import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityForge;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
-import net.minecraft.inventory.ICrafting;
+import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import com.blogspot.jabelarminecraft.blocksmith.recipes.ForgeRecipes;
-import com.blogspot.jabelarminecraft.blocksmith.slots.SlotForgeFuel;
-import com.blogspot.jabelarminecraft.blocksmith.slots.SlotForgeOutput;
-import com.blogspot.jabelarminecraft.blocksmith.tileentities.TileEntityForge;
 
 /**
  * @author agilroy
@@ -56,10 +56,10 @@ public class ContainerForge extends Container
      * Add the given Listener to the list of Listeners. Method name is for legacy.
      */
     @Override
-	public void onCraftGuiOpened(ICrafting parICraftingListener)
+	public void addListener(IContainerListener parIContainerListenerListener)
     {
-        super.onCraftGuiOpened(parICraftingListener);
-        parICraftingListener.func_175173_a(this, tileForge);
+        super.addListener(parIContainerListenerListener);
+        parIContainerListenerListener.sendAllWindowProperties(this, tileForge);
     }
 
     /**
@@ -70,28 +70,28 @@ public class ContainerForge extends Container
     {
         super.detectAndSendChanges();
 
-        for (int i = 0; i < crafters.size(); ++i)
+        for (int i = 0; i < listeners.size(); ++i)
         {
-            ICrafting icrafting = (ICrafting)crafters.get(i);
+            IContainerListener icrafting = listeners.get(i);
 
             if (field_178152_f != tileForge.getField(2))
             {
-                icrafting.sendProgressBarUpdate(this, 2, tileForge.getField(2));
+                icrafting.sendWindowProperty(this, 2, tileForge.getField(2));
             }
 
             if (field_178154_h != tileForge.getField(0))
             {
-                icrafting.sendProgressBarUpdate(this, 0, tileForge.getField(0));
+                icrafting.sendWindowProperty(this, 0, tileForge.getField(0));
             }
 
             if (field_178155_i != tileForge.getField(1))
             {
-                icrafting.sendProgressBarUpdate(this, 1, tileForge.getField(1));
+                icrafting.sendWindowProperty(this, 1, tileForge.getField(1));
             }
 
             if (field_178153_g != tileForge.getField(3))
             {
-                icrafting.sendProgressBarUpdate(this, 3, tileForge.getField(3));
+                icrafting.sendWindowProperty(this, 3, tileForge.getField(3));
             }
         }
 
@@ -111,7 +111,7 @@ public class ContainerForge extends Container
     @Override
 	public boolean canInteractWith(EntityPlayer playerIn)
     {
-        return tileForge.isUseableByPlayer(playerIn);
+        return tileForge.isUsableByPlayer(playerIn);
     }
 
     /**
@@ -121,7 +121,7 @@ public class ContainerForge extends Container
 	public ItemStack transferStackInSlot(EntityPlayer parPlayer, int parSlotId)
     {
         ItemStack itemstack = null;
-        Slot slot = (Slot)inventorySlots.get(parSlotId);
+        Slot slot = inventorySlots.get(parSlotId);
 
         if (slot != null && slot.getHasStack())
         {
@@ -170,7 +170,7 @@ public class ContainerForge extends Container
                 return null;
             }
 
-            if (itemstack1.stackSize == 0)
+            if (itemstack1.getCount() == 0)
             {
                 slot.putStack((ItemStack)null);
             }
@@ -179,12 +179,12 @@ public class ContainerForge extends Container
                 slot.onSlotChanged();
             }
 
-            if (itemstack1.stackSize == itemstack.stackSize)
+            if (itemstack1.getCount() == itemstack.getCount())
             {
                 return null;
             }
 
-            slot.onPickupFromSlot(parPlayer, itemstack1);
+            slot.onTake(parPlayer, itemstack1);
         }
 
         return itemstack;
